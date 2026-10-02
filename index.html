@@ -241,6 +241,115 @@
   .review-row.is-no .review-tag { color: var(--red); }
   .review-tag { flex: 0 0 auto; white-space: nowrap; }
 
+  /* ======= Nâng cấp: nút phụ, thống kê, ôn tập ======= */
+
+  /* Hàng nút phụ ở trang chủ */
+  .actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .hint-best { margin-top: 18px; font-size: 13px; color: var(--muted); text-align: center; }
+  .hint-best b { color: var(--teal); font-weight: 600; }
+  .hint-best:empty { display: none; }
+
+  /* Đầu màn hình phụ (nút quay lại + tiêu đề) */
+  .screen-head { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+  .back-btn {
+    flex: 0 0 auto; width: 42px; height: 42px; display: grid; place-items: center;
+    border-radius: 12px; background: var(--ink); border: 1.5px solid var(--line);
+    color: var(--text); cursor: pointer; font-size: 20px; line-height: 1;
+    transition: border-color .15s;
+  }
+  .back-btn:hover { border-color: var(--muted); }
+  .screen-head h2 {
+    font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -.01em;
+  }
+  .sub { font-size: 13px; color: var(--muted); }
+  .review-title .sub { font-weight: 400; }
+
+  /* Ô số liệu */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 10px; }
+  #result-tiles { margin-bottom: 4px; }
+  .tile {
+    background: var(--ink); border: 1.5px solid var(--line);
+    border-radius: 13px; padding: 14px 10px; text-align: center;
+  }
+  .tile-num { font-family: var(--display); font-weight: 700; font-size: 23px; letter-spacing: -.01em; }
+  .tile-label { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .tile.ok .tile-num { color: var(--teal); }
+  .tile.no .tile-num { color: var(--red); }
+  .tile.am .tile-num { color: var(--amber); }
+
+  /* Xem lại có thể mở rộng */
+  .review-item { display: block; }
+  .review-row {
+    width: 100%; font: inherit; color: inherit; text-align: left; cursor: pointer;
+  }
+  .review-row.open { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .review-caret { flex: 0 0 auto; color: var(--muted); transition: transform .2s; font-size: 12px; }
+  .review-row.open .review-caret { transform: rotate(90deg); }
+  .review-detail {
+    display: none; padding: 14px; margin-top: -1px;
+    border: 1.5px solid var(--line); border-top: none;
+    border-radius: 0 0 11px 11px; background: rgba(0,0,0,.18);
+  }
+  .review-detail.is-open { display: block; }
+  .detail-q { font-weight: 600; margin-bottom: 12px; line-height: 1.4; }
+  .opt-line {
+    display: flex; align-items: center; gap: 10px; padding: 9px 11px;
+    border-radius: 9px; border: 1.5px solid var(--line); margin-bottom: 7px; font-size: 14px;
+  }
+  .opt-line:last-child { margin-bottom: 0; }
+  .opt-line .k {
+    flex: 0 0 26px; height: 26px; display: grid; place-items: center; border-radius: 7px;
+    font-family: var(--display); font-weight: 700; font-size: 13px;
+    background: var(--surface); color: var(--muted);
+  }
+  .opt-txt { flex: 1; min-width: 0; }
+  .opt-flag { flex: 0 0 auto; font-size: 12px; font-weight: 600; }
+  .opt-line.correct { border-color: rgba(45,212,167,.5); background: rgba(45,212,167,.08); }
+  .opt-line.correct .k { background: var(--teal); color: #042b22; }
+  .opt-line.correct .opt-flag { color: var(--teal); }
+  .opt-line.wrong { border-color: rgba(242,85,90,.5); background: rgba(242,85,90,.08); }
+  .opt-line.wrong .k { background: var(--red); color: #2b0406; }
+  .opt-line.wrong .opt-flag { color: var(--red); }
+
+  /* Dùng lại .option cho chế độ Ôn tập (đáp án đúng tô xanh) */
+  .option.is-correct { border-color: rgba(45,212,167,.5); background: rgba(45,212,167,.08); }
+  .option.is-correct .option-key { background: var(--teal); color: #042b22; }
+  .option.static { cursor: default; }
+
+  /* Nút trên màn kết quả */
+  .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+  #retry-wrong-btn { grid-column: 1 / -1; }
+
+  /* Biểu đồ tiến bộ */
+  .chart-wrap { margin: 2px 0 26px; }
+  .chart { width: 100%; height: 118px; display: block; }
+  .chart-cap { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px; }
+
+  /* Bảng theo mã đề + câu hay sai */
+  .section-title {
+    font-family: var(--display); font-weight: 600; font-size: 14px;
+    color: var(--muted); margin: 6px 0 12px;
+  }
+  .stat-table { display: grid; gap: 8px; margin-bottom: 26px; }
+  .stat-row {
+    display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+    background: var(--ink); border: 1.5px solid var(--line); border-radius: 11px; font-size: 14px;
+  }
+  .stat-row .code { font-family: var(--display); font-weight: 700; }
+  .stat-row .grow { margin-left: auto; text-align: right; color: var(--muted); font-size: 13px; }
+  .stat-row .grow b { color: var(--text); font-weight: 600; }
+
+  .miss-list { display: grid; gap: 8px; margin-bottom: 24px; }
+  .miss-row {
+    display: flex; gap: 12px; align-items: center; padding: 12px 14px;
+    background: var(--ink); border: 1.5px solid rgba(242,85,90,.32);
+    border-radius: 11px; font-size: 14px;
+  }
+  .miss-row .txt { min-width: 0; flex: 1; }
+  .miss-row .cnt { flex: 0 0 auto; color: var(--red); font-weight: 600; font-size: 13px; white-space: nowrap; }
+
+  .empty { text-align: center; color: var(--muted); padding: 34px 10px; font-size: 14px; line-height: 1.6; }
+
   /* ================= MOBILE ================= */
   @media (max-width: 600px) {
     body { padding: 12px 10px; align-items: flex-start; }
@@ -296,8 +405,13 @@
           <input id="code-input" type="text" placeholder="DE01" autocomplete="off" spellcheck="false" />
         </div>
         <button id="start-btn" type="submit" class="btn btn-primary">Bắt đầu làm bài</button>
-        <p id="start-note" class="field-note"></p>
       </form>
+      <div class="actions-row">
+        <button id="study-btn" type="button" class="btn btn-ghost">Ôn tập đáp án</button>
+        <button id="stats-btn" type="button" class="btn btn-ghost">Thống kê</button>
+      </div>
+      <p id="start-note" class="field-note"></p>
+      <p id="start-best" class="hint-best"></p>
     </div>
   </section>
 
@@ -339,12 +453,56 @@
         <p id="submit-note" class="field-note" style="text-align:center"></p>
       </div>
 
+      <div class="tiles" id="result-tiles"></div>
+
       <div class="divider"></div>
 
-      <p class="review-title">Xem lại bài làm</p>
+      <p class="review-title">Xem lại bài làm <span class="sub">— bấm từng câu để xem đáp án</span></p>
       <ul id="review-list" class="review-list"></ul>
 
-      <button id="restart-btn" class="btn btn-ghost" style="width:100%">Làm đề khác</button>
+      <div class="result-actions">
+        <button id="retry-wrong-btn" class="btn btn-primary is-hidden">Học lại câu sai</button>
+        <button id="redo-btn" class="btn btn-ghost">Làm lại đề</button>
+        <button id="to-stats-btn" class="btn btn-ghost">Thống kê</button>
+        <button id="restart-btn" class="btn btn-ghost" style="grid-column:1 / -1">Về trang chủ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MÀN HÌNH 4: ÔN TẬP (xem đáp án) ============ -->
+  <section id="screen-study" class="screen">
+    <div class="card">
+      <div class="screen-head">
+        <button class="back-btn" type="button" data-back aria-label="Quay lại">←</button>
+        <div>
+          <h2>Ôn tập</h2>
+          <div id="study-meta" class="sub"></div>
+        </div>
+      </div>
+
+      <div class="progress"><div id="study-progress" class="progress-fill"></div></div>
+
+      <h2 id="study-q" class="q-text"></h2>
+      <div id="study-options" class="options"></div>
+
+      <div class="quiz-nav">
+        <button id="study-prev" class="btn btn-ghost">Câu trước</button>
+        <button id="study-next" class="btn btn-primary">Câu tiếp</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MÀN HÌNH 5: THỐNG KÊ ============ -->
+  <section id="screen-stats" class="screen">
+    <div class="card">
+      <div class="screen-head">
+        <button class="back-btn" type="button" data-back aria-label="Quay lại">←</button>
+        <div>
+          <h2>Thống kê của tôi</h2>
+          <div class="sub">Lưu trên thiết bị này</div>
+        </div>
+      </div>
+      <div id="stats-body"></div>
     </div>
   </section>
 
