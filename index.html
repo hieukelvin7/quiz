@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Phòng thi · Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink:        #0e1726;
+    --ink-2:      #16233b;
+    --surface:    #1b2a46;
+    --line:       #2b3c5c;
+    --text:       #e8edf4;
+    --muted:      #8a9bb4;
+    --amber:      #f5b301;
+    --teal:       #2dd4a7;
+    --red:        #f2555a;
+    --radius:     14px;
+    --shadow:     0 24px 60px -24px rgba(0,0,0,.65);
+    --sans:       'Inter', system-ui, sans-serif;
+    --display:    'Space Grotesk', var(--sans);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--text);
+    background:
+      radial-gradient(1100px 600px at 85% -10%, rgba(245,179,1,.10), transparent 60%),
+      radial-gradient(900px 600px at -10% 110%, rgba(45,212,167,.10), transparent 55%),
+      var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    line-height: 1.55;
+  }
+
+  .stage { width: 100%; max-width: 640px; }
+
+  /* ---------- Screens ---------- */
+  .screen { display: none; animation: rise .5s cubic-bezier(.2,.7,.2,1); }
+  .screen.is-active { display: block; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  @media (prefers-reduced-motion: reduce) {
+    .screen { animation: none; }
+    * { transition: none !important; }
+  }
+
+  .card {
+    background: linear-gradient(180deg, var(--ink-2), var(--ink));
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    padding: 40px 36px;
+  }
+  @media (max-width: 520px) { .card { padding: 28px 20px; } }
+
+  /* ---------- Start screen ---------- */
+  .brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--display); font-weight: 700; letter-spacing: -.01em;
+    font-size: 15px; color: var(--muted); margin-bottom: 28px;
+  }
+  .brand .dot {
+    width: 10px; height: 10px; border-radius: 3px;
+    background: var(--amber); box-shadow: 0 0 16px var(--amber);
+  }
+
+  h1 {
+    font-family: var(--display); font-weight: 700;
+    font-size: clamp(30px, 6vw, 44px); line-height: 1.05;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .lede { color: var(--muted); max-width: 46ch; margin-bottom: 32px; }
+
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: var(--muted); margin-bottom: 8px;
+  }
+  .field input {
+    width: 100%; font: inherit; color: var(--text);
+    background: var(--ink); border: 1.5px solid var(--line);
+    border-radius: var(--radius); padding: 14px 16px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .field input::placeholder { color: #5e6f8a; }
+  .field input:focus {
+    outline: none; border-color: var(--amber);
+    box-shadow: 0 0 0 4px rgba(245,179,1,.14);
+  }
+  #code-input {
+    font-family: var(--display); font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase; font-size: 20px;
+  }
+
+  .btn {
+    font: inherit; font-weight: 600; cursor: pointer;
+    border: none; border-radius: var(--radius);
+    padding: 15px 22px; transition: transform .12s, filter .15s, background .15s;
+  }
+  .btn:active { transform: translateY(1px) scale(.99); }
+  .btn-primary {
+    width: 100%; background: var(--amber); color: #2a1e00;
+    font-size: 16px; margin-top: 10px;
+  }
+  .btn-primary:hover { filter: brightness(1.06); }
+  .btn-primary.is-loading { opacity: .6; pointer-events: none; }
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    border: 1.5px solid var(--line);
+  }
+  .btn-ghost:hover { border-color: var(--muted); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  .field-note { min-height: 20px; margin-top: 14px; font-size: 14px; color: var(--muted); }
+  .field-note.is-error { color: var(--red); }
+  .field-note.is-ok { color: var(--teal); }
+
+  /* ---------- Quiz header ---------- */
+  .quiz-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; margin-bottom: 20px;
+  }
+  .quiz-meta { font-size: 13px; color: var(--muted); }
+  .q-count { font-family: var(--display); font-weight: 600; font-size: 14px; }
+  .q-count b { color: var(--amber); font-size: 18px; }
+
+  .timer {
+    font-family: var(--display); font-weight: 700; font-size: 20px;
+    font-variant-numeric: tabular-nums; letter-spacing: .02em;
+    padding: 8px 14px; border-radius: 10px;
+    background: var(--ink); border: 1.5px solid var(--line);
+  }
+  .timer.is-urgent {
+    color: var(--red); border-color: var(--red);
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse { 50% { background: rgba(242,85,90,.12); } }
+
+  .progress {
+    height: 7px; background: var(--ink); border-radius: 99px;
+    overflow: hidden; margin-bottom: 30px;
+  }
+  .progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--amber), var(--teal));
+    border-radius: 99px; transition: width .4s cubic-bezier(.2,.7,.2,1);
+  }
+
+  .q-text {
+    font-family: var(--display); font-weight: 600;
+    font-size: clamp(20px, 4vw, 26px); line-height: 1.3;
+    letter-spacing: -.01em; margin-bottom: 26px;
+  }
+
+  /* ---------- Options ---------- */
+  .options { display: grid; gap: 12px; margin-bottom: 30px; }
+  .option {
+    display: flex; align-items: center; gap: 14px; width: 100%;
+    text-align: left; font: inherit; color: var(--text); cursor: pointer;
+    background: var(--ink); border: 1.5px solid var(--line);
+    border-radius: var(--radius); padding: 15px 16px;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+  .option:hover { border-color: var(--muted); }
+  .option:active { transform: scale(.995); }
+  .option-key {
+    flex: 0 0 34px; height: 34px; display: grid; place-items: center;
+    font-family: var(--display); font-weight: 700; font-size: 15px;
+    border-radius: 9px; background: var(--surface); color: var(--muted);
+    transition: inherit;
+  }
+  .option.is-selected {
+    border-color: var(--amber); background: rgba(245,179,1,.08);
+  }
+  .option.is-selected .option-key {
+    background: var(--amber); color: #2a1e00;
+  }
+  .option-text { flex: 1; }
+
+  /* ---------- Nav ---------- */
+  .quiz-nav { display: flex; gap: 12px; }
+  .quiz-nav .btn { flex: 1; }
+  .is-hidden { display: none !important; }
+
+  /* ---------- Result ---------- */
+  .result-head { text-align: center; margin-bottom: 10px; }
+  .ring {
+    --pct: 0;
+    width: 180px; height: 180px; margin: 8px auto 20px;
+    border-radius: 50%;
+    background:
+      radial-gradient(closest-side, var(--ink-2) 72%, transparent 73%),
+      conic-gradient(var(--amber) calc(var(--pct) * 1%), var(--line) 0);
+    display: grid; place-items: center;
+  }
+  .score-big {
+    font-family: var(--display); font-weight: 700;
+    font-size: 40px; letter-spacing: -.02em;
+  }
+  .score-label { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .result-meta { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+
+  .divider { height: 1px; background: var(--line); margin: 24px 0; }
+
+  .review-title {
+    font-family: var(--display); font-weight: 600; font-size: 14px;
+    color: var(--muted); margin-bottom: 14px;
+  }
+  .review-list { list-style: none; display: grid; gap: 8px; margin-bottom: 26px; }
+  .review-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 13px; border-radius: 11px;
+    background: var(--ink); border: 1.5px solid var(--line); font-size: 14px;
+  }
+  .review-idx {
+    flex: 0 0 26px; height: 26px; display: grid; place-items: center;
+    border-radius: 7px; font-family: var(--display); font-weight: 700;
+    font-size: 13px; background: var(--surface);
+  }
+  .review-q {
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    color: var(--muted);
+  }
+  .review-tag { font-weight: 600; font-size: 13px; }
+  .review-row.is-ok  { border-color: rgba(45,212,167,.4); }
+  .review-row.is-ok .review-idx { background: var(--teal); color: #042b22; }
+  .review-row.is-ok .review-tag { color: var(--teal); }
+  .review-row.is-no  { border-color: rgba(242,85,90,.4); }
+  .review-row.is-no .review-idx { background: var(--red); color: #2b0406; }
+  .review-row.is-no .review-tag { color: var(--red); }
+</style>
+</head>
+<body>
+<main class="stage">
+
+  <!-- ============ MÀN HÌNH 1: NHẬP MÃ ĐỀ ============ -->
+  <section id="screen-start" class="screen is-active">
+    <div class="card">
+      <span class="brand"><span class="dot"></span>PHÒNG THI</span>
+      <h1>Sẵn sàng làm bài?</h1>
+      <p class="lede">Nhập tên và mã đề do giáo viên cung cấp. Hệ thống sẽ tải đúng bộ câu hỏi tương ứng.</p>
+
+      <form id="start-form" novalidate>
+        <div class="field">
+          <label for="name-input">Họ và tên</label>
+          <input id="name-input" type="text" placeholder="Nguyễn Văn A" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="code-input">Mã đề</label>
+          <input id="code-input" type="text" placeholder="DE01" autocomplete="off" spellcheck="false" />
+        </div>
+        <button id="start-btn" type="submit" class="btn btn-primary">Bắt đầu làm bài</button>
+        <p id="start-note" class="field-note"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ MÀN HÌNH 2: LÀM BÀI ============ -->
+  <section id="screen-quiz" class="screen">
+    <div class="card">
+      <div class="quiz-top">
+        <div>
+          <div class="q-count">Câu <b id="q-counter">1</b> / <span id="q-total">0</span></div>
+          <div id="quiz-meta" class="quiz-meta"></div>
+        </div>
+        <div id="timer" class="timer">00:00</div>
+      </div>
+
+      <div class="progress"><div id="progress-fill" class="progress-fill"></div></div>
+
+      <h2 id="q-text" class="q-text"></h2>
+      <div id="options" class="options"></div>
+
+      <div class="quiz-nav">
+        <button id="prev-btn" class="btn btn-ghost">Câu trước</button>
+        <button id="next-btn" class="btn btn-primary">Câu tiếp</button>
+        <button id="submit-btn" class="btn btn-primary is-hidden">Nộp bài</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MÀN HÌNH 3: KẾT QUẢ ============ -->
+  <section id="screen-result" class="screen">
+    <div class="card">
+      <div class="result-head">
+        <div id="result-ring" class="ring">
+          <div>
+            <div id="score-big" class="score-big">0/0</div>
+            <div id="score-label" class="score-label"></div>
+          </div>
+        </div>
+        <p id="result-meta" class="result-meta"></p>
+        <p id="submit-note" class="field-note" style="text-align:center"></p>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="review-title">Xem lại bài làm</p>
+      <ul id="review-list" class="review-list"></ul>
+
+      <button id="restart-btn" class="btn btn-ghost" style="width:100%">Làm đề khác</button>
+    </div>
+  </section>
+
+</main>
+<script src="script.js"></script>
+</body>
+</html>
