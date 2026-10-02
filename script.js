@@ -3,7 +3,7 @@
    (Deploy > New deployment > Web app > Copy URL, dạng:
     https://script.google.com/macros/s/AKfy..../exec )
    ============================================================ */
-const GAS_URL = "DÁN_URL_WEB_APP_CỦA_BẠN_VÀO_ĐÂY";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx0bNn8w4LrC-2fIgThVjvvJ6I50m0KzhBBKIFrFYVzp1Yj2C7NsP_8whWYLkdsNIzorQ/exec";
 
 /* Thời gian mặc định cho mỗi câu (giây) nếu Apps Script
    không trả về "duration". Có thể override bằng sheet "Config". */

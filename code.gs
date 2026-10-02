@@ -33,7 +33,9 @@ function doGet(e) {
     var sheet = ss.getSheetByName(code);
     if (!sheet) return json({ ok: false, error: "Không tìm thấy mã đề '" + code + "'." });
 
-    var rows = sheet.getDataRange().getValues();
+    // Dùng getDisplayValues để lấy đúng chuỗi hiển thị trên sheet
+    // (tránh việc "28/6/1750" bị Sheet tự chuyển thành Date -> ISO).
+    var rows = sheet.getDataRange().getDisplayValues();
     if (rows.length < 2) return json({ ok: false, error: "Đề chưa có câu hỏi." });
 
     var header = rows[0].map(function (h) { return String(h).trim().toLowerCase(); });
