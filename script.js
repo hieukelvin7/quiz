@@ -116,6 +116,144 @@ function setBtnLoading(btn, on) {
   btn.classList.toggle("is-loading", on);
 }
 
+/* ----------------------- Lottie ----------------------- */
+let loaderAnim = null, confettiAnim = null;
+const appLoader = $("#app-loader");
+
+function showLoader() {
+  if (window.lottie && !loaderAnim) {
+    try {
+      loaderAnim = lottie.loadAnimation({
+        container: $("#loader-anim"), renderer: "svg",
+        loop: true, autoplay: true, path: "assets/loader.json",
+      });
+    } catch (e) {}
+  }
+  appLoader.classList.remove("is-hidden");
+}
+function hideLoader() { appLoader.classList.add("is-hidden"); }
+
+function playConfetti() {
+  if (!window.lottie) return;
+  const c = $("#confetti");
+  try {
+    if (confettiAnim) { confettiAnim.destroy(); confettiAnim = null; }
+    confettiAnim = lottie.loadAnimation({
+      container: c, renderer: "svg", loop: false, autoplay: true, path: "assets/confetti.json",
+    });
+  } catch (e) {}
+}
+function clearConfetti() {
+  if (confettiAnim) { confettiAnim.destroy(); confettiAnim = null; }
+  const c = $("#confetti"); if (c) c.innerHTML = "";
+}
+
+let notesAnim = null;
+function initNotes() {
+  if (window.lottie && !notesAnim) {
+    try {
+      notesAnim = lottie.loadAnimation({
+        container: $("#notes"), renderer: "svg",
+        loop: true, autoplay: true, path: "assets/notes.json",
+      });
+    } catch (e) {}
+  }
+}
+
+/* ===========================================================
+   GAMIFICATION (kiểu Duolingo) — XP · chuỗi ngày · cấp · huy hiệu
+   =========================================================== */
+const GKEY = "quiz_gamify_v1";
+const DAILY_GOAL = 50;
+const BADGES = [
+  { id: "first",    ic: "🎯", name: "Khởi đầu",     desc: "Hoàn thành bài đầu tiên" },
+  { id: "perfect",  ic: "💯", name: "Tuyệt đối",     desc: "Đạt 100% một bài" },
+  { id: "streak3",  ic: "🔥", name: "Chuỗi 3 ngày",  desc: "Học 3 ngày liên tiếp" },
+  { id: "streak7",  ic: "⚡", name: "Chuỗi 7 ngày",  desc: "Học 7 ngày liên tiếp" },
+  { id: "xp300",    ic: "⭐", name: "300 XP",        desc: "Tích lũy 300 XP" },
+  { id: "xp1000",   ic: "🏆", name: "1000 XP",       desc: "Tích lũy 1000 XP" },
+  { id: "fill",     ic: "✍️", name: "Điền thủ",      desc: "Hoàn thành đề điền đục lỗ" },
+  { id: "comeback", ic: "🔁", name: "Học lại",       desc: "Luyện lại câu sai" },
+];
+const DEFAULT_G = { xp: 0, streak: 0, lastDay: "", badges: {}, dailyXp: 0, dailyDay: "" };
+
+function loadGamify() {
+  try { return Object.assign({}, DEFAULT_G, JSON.parse(localStorage.getItem(GKEY)) || {}); }
+  catch (e) { return Object.assign({}, DEFAULT_G); }
+}
+function saveGamify(g) { try { localStorage.setItem(GKEY, JSON.stringify(g)); } catch (e) {} }
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+function levelFromXp(xp) { return Math.floor(xp / 100) + 1; }
+
+function awardXp({ correct, percent, isFill }) {
+  const g = loadGamify();
+  const today = todayStr();
+  const xp = correct * 10 + (percent >= 80 ? 20 : 0);
+  g.xp += xp;
+
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (g.lastDay === today) { /* giữ chuỗi */ }
+  else if (g.lastDay === yesterday) g.streak += 1;
+  else g.streak = 1;
+  g.lastDay = today;
+
+  if (g.dailyDay !== today) { g.dailyDay = today; g.dailyXp = 0; }
+  g.dailyXp += xp;
+
+  const newBadges = [];
+  const unlock = (id) => { if (!g.badges[id]) { g.badges[id] = true; newBadges.push(id); } };
+  unlock("first");
+  if (percent >= 100) unlock("perfect");
+  if (g.streak >= 3) unlock("streak3");
+  if (g.streak >= 7) unlock("streak7");
+  if (g.xp >= 300) unlock("xp300");
+  if (g.xp >= 1000) unlock("xp1000");
+  if (isFill) unlock("fill");
+
+  saveGamify(g);
+  return { xp, streak: g.streak, newBadges };
+}
+
+function renderGamify() {
+  const g = loadGamify();
+  const today = todayStr();
+  const dailyXp = g.dailyDay === today ? g.dailyXp : 0;
+  const lvl = levelFromXp(g.xp);
+  const pct = Math.min(100, Math.round((dailyXp / DAILY_GOAL) * 100));
+  $("#gamify").innerHTML = `
+    <div class="g-row">
+      <div class="g-chip streak"><span class="g-ic">🔥</span><b>${g.streak}</b><span class="g-lbl">ngày</span></div>
+      <div class="g-chip xp"><span class="g-ic">⭐</span><b>${g.xp}</b><span class="g-lbl">XP</span></div>
+      <div class="g-chip"><span class="g-ic">🏆</span><b>Lv ${lvl}</b></div>
+    </div>
+    <div class="g-goal ${dailyXp >= DAILY_GOAL ? "done" : ""}">
+      <div class="g-goal-top"><span>Mục tiêu hôm nay</span><span>${Math.min(dailyXp, DAILY_GOAL)}/${DAILY_GOAL} XP${dailyXp >= DAILY_GOAL ? " ✓" : ""}</span></div>
+      <div class="g-bar"><div class="g-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="g-badges">${BADGES.map((b) =>
+      `<span class="g-badge ${g.badges[b.id] ? "on" : ""}" title="${esc(b.name)} — ${esc(b.desc)}">${b.ic}</span>`
+    ).join("")}</div>`;
+}
+
+function unlockBadge(id) {
+  const g = loadGamify();
+  if (!g.badges[id]) { g.badges[id] = true; saveGamify(g); }
+}
+
+function showXpGain({ xp, streak, newBadges }) {
+  const el = $("#xp-gain");
+  let html = `<div class="xp-pts">+${xp} XP</div><div class="xp-line">🔥 Chuỗi ${streak} ngày</div>`;
+  if (newBadges && newBadges.length) {
+    const names = newBadges.map((id) => {
+      const b = BADGES.find((x) => x.id === id);
+      return b ? b.ic + " " + b.name : id;
+    });
+    html += `<div class="xp-new">Mở khóa: ${esc(names.join(", "))}</div>`;
+  }
+  el.innerHTML = html;
+  el.classList.add("show");
+}
+
 /* ----------------------- Lịch sử (localStorage) ----------------------- */
 function loadHistory() {
   try { return JSON.parse(localStorage.getItem(HKEY)) || []; }
@@ -151,6 +289,12 @@ const startNote = $("#start-note");
 const startBest = $("#start-best");
 const studyBtn = $("#study-btn");
 const statsBtn = $("#stats-btn");
+const instantToggle = $("#instant-toggle");
+try { instantToggle.checked = localStorage.getItem("quiz_instant") === "1"; } catch (e) {}
+instantToggle.addEventListener("change", () => {
+  try { localStorage.setItem("quiz_instant", instantToggle.checked ? "1" : "0"); } catch (e) {}
+});
+function readInstant() { return !!instantToggle.checked; }
 
 startForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -163,10 +307,11 @@ startForm.addEventListener("submit", async (e) => {
 
   setBtnLoading(startBtn, true);
   setStatus(startNote, "Đang tải đề thi…");
+  showLoader();
   try {
     const { questions, duration } = await loadQuiz(code);
     const prepared = prepareMcq(questions);     // xáo câu + xáo đáp án
-    state.code = code; state.name = name;
+    state.code = code; state.name = name; state.instant = readInstant();
     state.examQuestions = prepared; state.examDuration = duration;
     setStatus(startNote, "");
     beginQuiz({ mode: "exam", questions: prepared, duration });
@@ -174,6 +319,7 @@ startForm.addEventListener("submit", async (e) => {
     setStatus(startNote, err.message || "Có lỗi xảy ra, thử lại nhé.", "error");
   } finally {
     setBtnLoading(startBtn, false);
+    hideLoader();
   }
 });
 
@@ -182,6 +328,7 @@ studyBtn.addEventListener("click", async () => {
   if (!code) return setStatus(startNote, "Nhập mã đề để ôn tập.", "error");
   setBtnLoading(studyBtn, true);
   setStatus(startNote, "Đang tải đề để ôn tập…");
+  showLoader();
   try {
     const { questions } = await loadQuiz(code);
     setStatus(startNote, "");
@@ -190,6 +337,7 @@ studyBtn.addEventListener("click", async () => {
     setStatus(startNote, err.message || "Có lỗi xảy ra.", "error");
   } finally {
     setBtnLoading(studyBtn, false);
+    hideLoader();
   }
 });
 
@@ -206,6 +354,7 @@ async function startFill() {
 
   setBtnLoading(fillBtn, true);
   setStatus(startNote, "Đang tạo đề điền đục lỗ ngẫu nhiên…");
+  showLoader();
   try {
     const res = await fetch(`${GAS_URL}?action=getFill`);
     const data = await res.json();
@@ -224,7 +373,7 @@ async function startFill() {
     const questions = pool.slice(0, n);
     const blanks = questions.reduce((s, q) => s + q.blanks.length, 0);
 
-    state.code = "FILL"; state.name = name;
+    state.code = "FILL"; state.name = name; state.instant = readInstant();
     state.examQuestions = questions; state.examDuration = blanks * 40;
     setStatus(startNote, "");
     beginQuiz({ mode: "exam", questions, duration: blanks * 40 });
@@ -232,6 +381,7 @@ async function startFill() {
     setStatus(startNote, err.message || "Có lỗi xảy ra.", "error");
   } finally {
     setBtnLoading(fillBtn, false);
+    hideLoader();
   }
 }
 
@@ -254,6 +404,8 @@ const optionsEl = $("#options");
 const prevBtn = $("#prev-btn");
 const nextBtn = $("#next-btn");
 const submitBtn = $("#submit-btn");
+const checkBtn = $("#check-btn");
+const feedbackEl = $("#feedback");
 const quizMeta = $("#quiz-meta");
 
 function beginQuiz({ mode, questions, duration }) {
@@ -261,6 +413,7 @@ function beginQuiz({ mode, questions, duration }) {
   state.timed = mode === "exam";
   state.questions = questions;
   state.answers = {};
+  state.checked = {};          // câu nào đã bấm "Kiểm tra" (chế độ phản hồi ngay)
   state.current = 0;
   state.startedAt = Date.now();
 
@@ -304,60 +457,116 @@ function updateTimerUI() {
 function renderQuestion() {
   const q = state.questions[state.current];
   const idx = state.current;
+  const revealed = state.instant && state.checked[idx];   // đã kiểm tra & lộ đáp án
 
   qCounter.textContent = idx + 1;
   progressFill.style.width = ((idx + 1) / state.questions.length) * 100 + "%";
   qText.textContent = q.question;
   optionsEl.innerHTML = "";
+  feedbackEl.className = "feedback";
+  feedbackEl.innerHTML = "";
 
   if (q.type === "fill") {
     qText.textContent = `Điền các từ còn thiếu trong đoạn (${q.blanks.length} chỗ)`;
     if (!Array.isArray(state.answers[idx])) state.answers[idx] = [];
 
-    const cloze = document.createElement("div");
-    cloze.className = "cloze";
-    const parts = q.passage.split(/_{2,}/);   // mỗi "____" = 1 chỗ trống
-    parts.forEach((p, i) => {
-      if (p) cloze.appendChild(document.createTextNode(p));
-      if (i < parts.length - 1) {
-        const wrap = document.createElement("span");
-        wrap.className = "blank";
-        const no = document.createElement("span");
-        no.className = "blank-no";
-        no.textContent = "(" + (i + 1) + ")";
-        wrap.appendChild(no);
-        wrap.appendChild(makeFillInput(idx, i));
-        cloze.appendChild(wrap);
-      }
-    });
-    optionsEl.appendChild(cloze);
-
-    const note = document.createElement("div");
-    note.className = "fill-note";
-    note.textContent = "Không phân biệt hoa/thường · phải đúng chính tả, kể cả dấu · Enter để sang chỗ tiếp.";
-    optionsEl.appendChild(note);
-
-    setTimeout(() => { const el = cloze.querySelector("input"); if (el) el.focus(); }, 0);
+    if (revealed) {
+      // Hiện đoạn đã điền sẵn đáp án (xanh/đỏ) — dùng lại detailHTML
+      optionsEl.innerHTML = `<div class="cloze-review">${detailHTML(q, state.answers[idx])}</div>`;
+    } else {
+      const cloze = document.createElement("div");
+      cloze.className = "cloze";
+      const parts = q.passage.split(/_{2,}/);
+      parts.forEach((p, i) => {
+        if (p) cloze.appendChild(document.createTextNode(p));
+        if (i < parts.length - 1) {
+          const wrap = document.createElement("span");
+          wrap.className = "blank";
+          const no = document.createElement("span");
+          no.className = "blank-no";
+          no.textContent = "(" + (i + 1) + ")";
+          wrap.appendChild(no);
+          wrap.appendChild(makeFillInput(idx, i));
+          cloze.appendChild(wrap);
+        }
+      });
+      optionsEl.appendChild(cloze);
+      const note = document.createElement("div");
+      note.className = "fill-note";
+      note.textContent = "Không phân biệt hoa/thường · phải đúng chính tả, kể cả dấu · Enter để sang chỗ tiếp.";
+      optionsEl.appendChild(note);
+      setTimeout(() => { const el = cloze.querySelector("input"); if (el) el.focus(); }, 0);
+    }
   } else {
+    const right = rightKey(q);
     ["A", "B", "C", "D"].forEach((key) => {
       const label = q["option" + key];
       if (label == null || label === "") return;
       const chosen = state.answers[idx] === key;
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "option" + (chosen ? " is-selected" : "");
+      let cls = "option";
+      if (revealed) {
+        cls += " locked";
+        if (key === right) cls += " opt-correct";
+        else if (chosen) cls += " opt-wrong";
+      } else if (chosen) cls += " is-selected";
+      btn.className = cls;
       btn.innerHTML = `<span class="option-key">${key}</span><span class="option-text"></span>`;
       btn.querySelector(".option-text").textContent = label;
-      btn.addEventListener("click", () => { state.answers[idx] = key; renderQuestion(); });
+      if (!revealed) btn.addEventListener("click", () => { state.answers[idx] = key; renderQuestion(); });
       optionsEl.appendChild(btn);
     });
   }
 
-  prevBtn.disabled = idx === 0;
+  if (revealed) showFeedback(q, idx);
+  updateNav(q, idx, revealed);
+}
+
+/* Banner phản hồi đúng/sai */
+function showFeedback(q, idx) {
+  const g = gradeQuestion(q, state.answers[idx]);
+  const ok = g.got === g.max;
+  feedbackEl.className = "feedback show " + (ok ? "ok" : "no");
+  if (q.type === "fill") {
+    feedbackEl.innerHTML = ok
+      ? `Hoàn hảo! 🎉 <span class="fb-sub">Đúng cả ${g.max} chỗ</span>`
+      : `Đúng ${g.got}/${g.max} chỗ <span class="fb-sub">Xem chỗ sai ở đáp án phía trên</span>`;
+  } else {
+    const rightText = q["option" + rightKey(q)] || "";
+    feedbackEl.innerHTML = ok
+      ? `Chính xác! 🎉`
+      : `Chưa đúng <span class="fb-sub">Đáp án đúng: ${esc(rightText)}</span>`;
+  }
+}
+
+/* Điều phối nút theo chế độ */
+function updateNav(q, idx, revealed) {
   const isLast = idx === state.questions.length - 1;
-  nextBtn.classList.toggle("is-hidden", isLast);
-  submitBtn.classList.toggle("is-hidden", !isLast);
-  submitBtn.textContent = state.mode === "practice" ? "Hoàn thành" : "Nộp bài";
+  const lastLabel = state.mode === "practice" ? "Hoàn thành" : "Nộp bài";
+  submitBtn.textContent = isLast && state.instant ? lastLabel : (state.mode === "practice" ? "Hoàn thành" : "Nộp bài");
+
+  if (state.instant) {
+    prevBtn.classList.add("is-hidden");
+    if (!revealed) {
+      checkBtn.classList.remove("is-hidden");
+      checkBtn.disabled = !hasAnswer(q, state.answers[idx]);
+      nextBtn.classList.add("is-hidden");
+      submitBtn.classList.add("is-hidden");
+    } else {
+      checkBtn.classList.add("is-hidden");
+      nextBtn.textContent = "Tiếp tục";
+      nextBtn.classList.toggle("is-hidden", isLast);
+      submitBtn.classList.toggle("is-hidden", !isLast);
+    }
+  } else {
+    prevBtn.classList.remove("is-hidden");
+    checkBtn.classList.add("is-hidden");
+    prevBtn.disabled = idx === 0;
+    nextBtn.textContent = "Câu tiếp";
+    nextBtn.classList.toggle("is-hidden", isLast);
+    submitBtn.classList.toggle("is-hidden", !isLast);
+  }
 }
 
 prevBtn.addEventListener("click", () => {
@@ -366,7 +575,16 @@ prevBtn.addEventListener("click", () => {
 nextBtn.addEventListener("click", () => {
   if (state.current < state.questions.length - 1) { state.current += 1; renderQuestion(); }
 });
+checkBtn.addEventListener("click", () => {
+  const idx = state.current;
+  const q = state.questions[idx];
+  if (!hasAnswer(q, state.answers[idx])) return;
+  state.checked[idx] = true;
+  renderQuestion();
+});
 function goNextOrSubmit() {
+  // Enter trong ô điền: chế độ phản hồi ngay thì "Kiểm tra" trước
+  if (state.instant && !state.checked[state.current]) { checkBtn.click(); return; }
   if (state.current < state.questions.length - 1) { state.current += 1; renderQuestion(); }
   else submitBtn.click();
 }
@@ -404,6 +622,7 @@ function hasAnswer(q, a) {
     : !!a;
 }
 submitBtn.addEventListener("click", () => {
+  if (state.instant) { finishQuiz(false); return; }   // đã kiểm tra từng câu
   const answered = state.questions.reduce((n, q, i) => n + (hasAnswer(q, state.answers[i]) ? 1 : 0), 0);
   const unanswered = state.questions.length - answered;
   const word = state.questions[0] && state.questions[0].type === "fill" ? "đoạn" : "câu";
@@ -459,7 +678,10 @@ function finishQuiz(timedOut) {
         picked: w.q.type === "fill" ? "" : (w.picked || "—"),
       })),
     });
+    const isFill = qs[0] && qs[0].type === "fill";
+    showXpGain(awardXp({ correct, percent, isFill }));
     renderStartBest();
+    renderGamify();
     sendResult({ correct, total, percent, durationSec });
   } else {
     submitNote.textContent = "";
@@ -518,6 +740,10 @@ function renderResult({ correct, total, percent, durationSec, timedOut }) {
 
   retryWrongBtn.classList.toggle("is-hidden", wrong === 0);
   submitNote.textContent = "";
+  const xg = $("#xp-gain"); xg.classList.remove("show"); xg.innerHTML = "";
+
+  // Pháo giấy khi làm tốt
+  if (percent >= 80) playConfetti(); else clearConfetti();
 }
 
 function detailHTML(q, ans) {
@@ -587,7 +813,10 @@ async function sendResult(scoreData) {
 }
 
 retryWrongBtn.addEventListener("click", () => {
-  if (state.lastWrong.length) beginQuiz({ mode: "practice", questions: state.lastWrong });
+  if (state.lastWrong.length) {
+    unlockBadge("comeback");
+    beginQuiz({ mode: "practice", questions: state.lastWrong });
+  }
 });
 redoBtn.addEventListener("click", () => {
   if (state.examQuestions.length)
@@ -597,6 +826,7 @@ toStatsBtn.addEventListener("click", showStats);
 restartBtn.addEventListener("click", () => {
   setStatus(startNote, "");
   renderStartBest();
+  renderGamify();
   showScreen("start");
 });
 
@@ -754,8 +984,11 @@ function missHTML(h) {
 $$("[data-back]").forEach((b) => b.addEventListener("click", () => {
   setStatus(startNote, "");
   renderStartBest();
+  renderGamify();
   showScreen("start");
 }));
 
 /* ----------------------- Khởi động ----------------------- */
 renderStartBest();
+renderGamify();
+initNotes();

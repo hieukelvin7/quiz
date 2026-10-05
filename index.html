@@ -393,6 +393,88 @@
 
   .empty { text-align: center; color: var(--muted); padding: 34px 10px; font-size: 14px; line-height: 1.6; }
 
+  /* ===== Lottie: loader + confetti ===== */
+  #screen-result .card { position: relative; }
+  .loader-overlay {
+    position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+    background: rgba(8,14,24,.66); backdrop-filter: blur(4px);
+    animation: fade .2s ease;
+  }
+  @keyframes fade { from { opacity: 0; } }
+  .loader-overlay.is-hidden { display: none; }
+  .loader-box {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 22px 30px; border-radius: 18px;
+    background: var(--ink-2); border: 1px solid var(--line); box-shadow: var(--shadow);
+  }
+  .loader-anim { width: 96px; height: 32px; }
+  .loader-box span { font-size: 14px; color: var(--muted); }
+  .confetti-layer { position: absolute; inset: 0; pointer-events: none; z-index: 6; overflow: hidden; }
+
+  /* Nốt nhạc bay ở màn chủ */
+  #screen-start .card { position: relative; overflow: hidden; }
+  .notes-layer {
+    position: absolute; top: 0; right: 0; width: 55%; height: 100%;
+    pointer-events: none; opacity: .4; z-index: 0;
+  }
+  .notes-layer svg { height: 100% !important; }
+  #screen-start .card > *:not(.notes-layer) { position: relative; z-index: 1; }
+
+  /* ===== Gamification (kiểu Duolingo) ===== */
+  .gamify { margin-bottom: 22px; }
+  .g-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .g-chip {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 9px 6px; border-radius: 12px; background: var(--ink); border: 1.5px solid var(--line);
+  }
+  .g-chip .g-ic { font-size: 16px; line-height: 1; }
+  .g-chip b { font-family: var(--display); font-weight: 700; font-size: 16px; }
+  .g-chip .g-lbl { font-size: 11px; color: var(--muted); }
+  .g-chip.streak b { color: var(--amber); }
+  .g-chip.xp b { color: var(--teal); }
+
+  .g-goal-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .g-bar { height: 8px; background: var(--ink); border-radius: 99px; overflow: hidden; }
+  .g-bar-fill { height: 100%; width: 0; border-radius: 99px;
+    background: linear-gradient(90deg, var(--teal), var(--amber)); transition: width .5s cubic-bezier(.2,.7,.2,1); }
+  .g-goal.done .g-bar-fill { background: var(--teal); }
+
+  .g-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .g-badge {
+    width: 38px; height: 38px; display: grid; place-items: center; font-size: 19px;
+    border-radius: 11px; background: var(--ink); border: 1.5px solid var(--line);
+    filter: grayscale(1) opacity(.35); cursor: default; transition: transform .15s;
+  }
+  .g-badge.on { filter: none; border-color: rgba(245,179,1,.45); background: rgba(245,179,1,.07); }
+  .g-badge.on:hover { transform: translateY(-2px); }
+
+  /* Phần thưởng XP ở màn kết quả */
+  .xp-gain { text-align: center; margin: 4px 0 2px; font-size: 14px; display: none; }
+  .xp-gain.show { display: block; animation: pop .4s cubic-bezier(.2,.7,.2,1); }
+  @keyframes pop { from { opacity: 0; transform: scale(.9); } }
+  .xp-gain .xp-pts { font-family: var(--display); font-weight: 700; font-size: 20px; color: var(--teal); }
+  .xp-gain .xp-line { color: var(--muted); margin-top: 2px; }
+  .xp-gain .xp-new { color: var(--amber); font-weight: 600; margin-top: 6px; }
+
+  /* ===== Phản hồi đúng/sai ngay (Duolingo) ===== */
+  .switch-row { display: flex; align-items: center; gap: 10px; margin-top: 14px;
+    font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; }
+  .switch-row input { width: 18px; height: 18px; accent-color: var(--amber); cursor: pointer; flex: 0 0 auto; }
+
+  .option.locked { cursor: default; }
+  .option.opt-correct { border-color: rgba(45,212,167,.6); background: rgba(45,212,167,.1); }
+  .option.opt-correct .option-key { background: var(--teal); color: #042b22; }
+  .option.opt-wrong { border-color: rgba(242,85,90,.6); background: rgba(242,85,90,.1); }
+  .option.opt-wrong .option-key { background: var(--red); color: #2b0406; }
+
+  .feedback { display: none; margin: -8px 0 22px; padding: 13px 15px;
+    border-radius: 12px; font-weight: 600; font-size: 14px; }
+  .feedback.show { display: block; animation: pop .3s cubic-bezier(.2,.7,.2,1); }
+  .feedback.ok { background: rgba(45,212,167,.12); border: 1.5px solid rgba(45,212,167,.4); color: var(--teal); }
+  .feedback.no { background: rgba(242,85,90,.12); border: 1.5px solid rgba(242,85,90,.4); color: var(--red); }
+  .feedback .fb-sub { display: block; color: var(--muted); font-weight: 400; margin-top: 4px; }
+  .cloze-review .detail-q { font-size: 18px; }
+
   /* ================= MOBILE ================= */
   @media (max-width: 600px) {
     body { padding: 12px 10px; align-items: flex-start; }
@@ -434,7 +516,9 @@
   <!-- ============ MÀN HÌNH 1: NHẬP MÃ ĐỀ ============ -->
   <section id="screen-start" class="screen is-active">
     <div class="card">
+      <div id="notes" class="notes-layer"></div>
       <span class="brand"><span class="dot"></span>PHÒNG THI</span>
+      <div id="gamify" class="gamify"></div>
       <h1>Sẵn sàng làm bài?</h1>
       <p class="lede">Nhập tên và mã đề do giáo viên cung cấp. Hệ thống sẽ tải đúng bộ câu hỏi tương ứng.</p>
 
@@ -454,6 +538,7 @@
         <button id="stats-btn" type="button" class="btn btn-ghost">Thống kê</button>
       </div>
       <button id="fill-btn" type="button" class="btn btn-ghost"><span class="dot"></span>Điền đục lỗ (ngẫu nhiên)</button>
+      <label class="switch-row"><input type="checkbox" id="instant-toggle"><span>Phản hồi đúng/sai ngay sau mỗi câu</span></label>
       <p id="start-note" class="field-note"></p>
       <p id="start-best" class="hint-best"></p>
     </div>
@@ -474,9 +559,11 @@
 
       <h2 id="q-text" class="q-text"></h2>
       <div id="options" class="options"></div>
+      <div id="feedback" class="feedback"></div>
 
       <div class="quiz-nav">
         <button id="prev-btn" class="btn btn-ghost">Câu trước</button>
+        <button id="check-btn" class="btn btn-primary is-hidden">Kiểm tra</button>
         <button id="next-btn" class="btn btn-primary">Câu tiếp</button>
         <button id="submit-btn" class="btn btn-primary is-hidden">Nộp bài</button>
       </div>
@@ -486,6 +573,7 @@
   <!-- ============ MÀN HÌNH 3: KẾT QUẢ ============ -->
   <section id="screen-result" class="screen">
     <div class="card">
+      <div id="confetti" class="confetti-layer"></div>
       <div class="result-head">
         <div id="result-ring" class="ring">
           <div>
@@ -494,6 +582,7 @@
           </div>
         </div>
         <p id="result-meta" class="result-meta"></p>
+        <div id="xp-gain" class="xp-gain"></div>
         <p id="submit-note" class="field-note" style="text-align:center"></p>
       </div>
 
@@ -550,7 +639,16 @@
     </div>
   </section>
 
+  <!-- Loader (Lottie) -->
+  <div id="app-loader" class="loader-overlay is-hidden" aria-hidden="true">
+    <div class="loader-box">
+      <div id="loader-anim" class="loader-anim"></div>
+      <span>Đang tải…</span>
+    </div>
+  </div>
+
 </main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
