@@ -1,6 +1,6 @@
-# Bộ câu hỏi LSAN — 104 câu / 5 mã đề
+# Bộ câu hỏi LSAN — 152 câu / 7 mã đề
 
-Sinh tự động từ tài liệu **ôn thi LSAN 2025.ppt**.
+Sinh tự động từ tài liệu **ôn thi LSAN 2025.ppt** (phủ gần như toàn bộ nội dung).
 
 | Mã đề | Chủ đề | Số câu |
 |------|--------|:---:|
@@ -9,12 +9,17 @@ Sinh tự động từ tài liệu **ôn thi LSAN 2025.ppt**.
 | **DE03** | Lãng mạn: Schubert – Mendelssohn – Schumann | 18 |
 | **DE04** | Lãng mạn: Chopin – Liszt – Grieg – Dvořák | 20 |
 | **DE05** | Wagner, Brahms, Tchaikovsky, Debussy, Stravinsky, Shostakovich | 28 |
+| **DE06** | Bối cảnh & đặc điểm các trường phái | 24 |
+| **DE07** | Điệu thức cổ, chi tiết tác phẩm & nhân vật (Weber, Rimsky, Rachmaninov…) | 24 |
+
+> Khi làm bài, app **xáo trộn thứ tự câu + xáo trộn đáp án A/B/C/D** mỗi lần → trắc nghiệm cũng "động".
 
 Mỗi file CSV có cột: `ID | Question | OptionA | OptionB | OptionC | OptionD | Answer`
 (Answer là đáp án đúng: A/B/C/D) — đúng định dạng backend `code.gs` yêu cầu.
 
 ### Điền đục lỗ — ĐOẠN VĂN (cloze) — `FILL.csv` / `seed-fill.gs`
-- **12 đoạn văn** liền mạch, mỗi đoạn khoét **5–9 chỗ trống** (78 chỗ tổng), sheet **`FILL`**.
+- **37 đoạn văn** phủ ~toàn bộ tài liệu (năm, opus, danh mục tác phẩm từng nhạc sĩ) — **202 chỗ trống**, sheet **`FILL`**.
+- App random **10 đoạn mỗi lượt**; làm vài lượt sẽ quét hết tài liệu.
 - Cột: `Title | Passage | Answers | Accept`
   - `Passage`: đoạn văn, mỗi chỗ trống đánh dấu **`___`** (theo thứ tự).
   - `Answers`: đáp án từng chỗ, ngăn nhau bằng **`|`** (đúng thứ tự chỗ trống).

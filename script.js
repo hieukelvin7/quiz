@@ -57,7 +57,7 @@ function esc(s) {
 function rightKey(q) { return String(q.answer).trim().toUpperCase(); }
 
 /* Số ĐOẠN VĂN điền đục lỗ lấy ngẫu nhiên mỗi lần khởi tạo */
-const FILL_PASSAGES = 5;
+const FILL_PASSAGES = 10;
 
 /* Chuẩn hoá đáp án điền: bỏ qua HOA/thường + khoảng trắng thừa,
    NHƯNG giữ nguyên dấu tiếng Việt (chính tả phải đúng). */
@@ -89,6 +89,26 @@ function shuffle(arr) {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+
+/* Xáo trộn 4 đáp án của 1 câu trắc nghiệm, cập nhật lại đáp án đúng */
+function shuffleOptions(q) {
+  const keys = ["A", "B", "C", "D"].filter((k) => q["option" + k] != null && q["option" + k] !== "");
+  const items = keys.map((k) => ({ text: q["option" + k], correct: k === rightKey(q) }));
+  shuffle(items);
+  const out = { type: "mcq", question: q.question };
+  const letters = ["A", "B", "C", "D"];
+  out.answer = "A";
+  items.forEach((it, i) => {
+    out["option" + letters[i]] = it.text;
+    if (it.correct) out.answer = letters[i];
+  });
+  return out;
+}
+
+/* Chuẩn bị đề trắc nghiệm: xáo đáp án từng câu + xáo thứ tự câu */
+function prepareMcq(list) {
+  return shuffle(list.map(shuffleOptions));
 }
 
 function setBtnLoading(btn, on) {
@@ -145,10 +165,11 @@ startForm.addEventListener("submit", async (e) => {
   setStatus(startNote, "Đang tải đề thi…");
   try {
     const { questions, duration } = await loadQuiz(code);
+    const prepared = prepareMcq(questions);     // xáo câu + xáo đáp án
     state.code = code; state.name = name;
-    state.examQuestions = questions; state.examDuration = duration;
+    state.examQuestions = prepared; state.examDuration = duration;
     setStatus(startNote, "");
-    beginQuiz({ mode: "exam", questions, duration });
+    beginQuiz({ mode: "exam", questions: prepared, duration });
   } catch (err) {
     setStatus(startNote, err.message || "Có lỗi xảy ra, thử lại nhé.", "error");
   } finally {

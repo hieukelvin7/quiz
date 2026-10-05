@@ -1,17 +1,8 @@
 /************************************************************
- * SEED QUIZ — tự động tạo các sheet mã đề từ dữ liệu có sẵn
- * ----------------------------------------------------------
- * CÁCH DÙNG:
- *   1. Mở Google Sheet > Extensions > Apps Script.
- *   2. Tạo file mới, dán TOÀN BỘ nội dung này vào.
- *   3. Chọn hàm "seedQuiz" trên thanh công cụ > bấm Run.
- *   4. Cấp quyền (Authorize) nếu được hỏi.
- *   -> Script tạo 5 sheet: DE01..DE05 với đầy đủ câu hỏi.
- *
- * Chạy lại sẽ XOÁ và tạo mới các sheet này (ghi đè).
- * File này độc lập với code.gs (backend) — có thể xoá sau khi seed xong.
+ * SEED QUIZ — tạo các sheet mã đề trắc nghiệm (DE01..DE07)
+ *   Apps Script > file mới > dán > chọn hàm "seedQuiz" > Run.
+ *   Chạy lại sẽ ghi đè các sheet này.
  ************************************************************/
-
 var QUIZ_DATA = {
   "DE01": [
     [1, "J.S. Bach được xếp vào nhạc sĩ thuộc thời kỳ nào của âm nhạc Đức?", "Lãng mạn", "Tiền cổ điển", "Ấn tượng", "Hiện đại", "B"],
@@ -127,37 +118,81 @@ var QUIZ_DATA = {
     [27, "Shostakovich sáng tác bao nhiêu bản giao hưởng?", "9", "15", "6", "24", "B"],
     [28, "Bản giao hưởng số 7 (1942) rất nổi tiếng của Shostakovich có tên là?", "Thế giới mới", "Leningrad", "Anh hùng", "Định mệnh", "B"],
   ],
+  "DE06": [
+    [1, "Cuộc nội chiến 30 năm (1618–1648) gây hậu quả gì cho nước Đức?", "Thống nhất đất nước", "Suy yếu và chia cắt thành nhiều nước nhỏ", "Phát triển âm nhạc rực rỡ", "Mở rộng lãnh thổ", "B"],
+    [2, "Vì sao âm nhạc chuyên nghiệp Phục Hưng Đức phát triển yếu, không liên tục?", "Thiếu nhạc cụ", "Không có chỗ dựa vững chắc vào triết học và văn học như Ý, Pháp", "Bị nhà thờ cấm", "Không có nhạc sĩ", "B"],
+    [3, "Mảng âm nhạc nổi bật của Đức TK XV–XVII cho đàn orgue gồm các thể loại nào?", "Sonate, giao hưởng", "Pasacal, Prélude và Fugue", "Opera, ballet", "Ca khúc, romance", "B"],
+    [4, "Trường phái Cổ điển Vienne phát triển trong thời gian nào?", "Suốt TK XIX", "Nửa sau TK XVIII – đầu TK XIX", "TK XVII", "Đầu TK XX", "B"],
+    [5, "Trong thời Cổ điển Vienne, sinh hoạt âm nhạc nào lấn át sinh hoạt âm nhạc tôn giáo?", "Thính phòng", "Nhà thờ", "Cung đình", "Dân gian", "A"],
+    [6, "Nội dung âm nhạc Cổ điển Vienne đề cao điều gì?", "Thần linh", "Con người và trách nhiệm công dân với tổ quốc", "Chiến tranh", "Thiên nhiên", "B"],
+    [7, "Dàn nhạc giao hưởng cổ điển Vienne gồm mấy bộ?", "2 bộ", "3 bộ", "4 bộ", "5 bộ", "C"],
+    [8, "Công năng hòa âm đặc trưng của trường phái Cổ điển Vienne được ký hiệu là?", "TSDT", "SATB", "ABAB", "TDTS", "A"],
+    [9, "Nội dung âm nhạc Lãng mạn đề cao điều gì?", "Lý trí và khoa học", "Tình cảm, tình yêu, cái tôi và nỗi cô đơn", "Chiến công quân sự", "Giáo lý tôn giáo", "B"],
+    [10, "Thể loại âm nhạc nào ra đời trong trường phái Lãng mạn?", "Giao hưởng thơ", "Fugue", "Messa", "Concerto grosso", "A"],
+    [11, "Dàn nhạc Lãng mạn khai thác nhiều hơn các nhạc cụ phụ nào?", "clarinette, fagotte, timpani, harpe", "violon, viola", "piano, orgue", "trumpet, trombone", "A"],
+    [12, "Âm nhạc Lãng mạn thường phát triển theo lối nào để thống nhất hình tượng?", "Đa chủ đề", "Đơn chủ đề", "Ngẫu hứng", "Vô chủ đề", "B"],
+    [13, "Nhạc cụ dân tộc của Tiệp khắc gồm những gì?", "đàn tranh, sáo trúc", "kèn túi da, đàn vĩ kéo, trống, sáo fuar", "đàn bầu, đàn nguyệt", "guitar, mandolin", "B"],
+    [14, "Điệu múa dân gian đặc trưng được đưa nhiều vào tác phẩm của nhạc sĩ Tiệp khắc?", "Valse", "Polka", "Tango", "Flamenco", "B"],
+    [15, "Cuộc khởi nghĩa 'Những người tháng chạp' ở Nga diễn ra ngày nào?", "14/12/1825", "1/5/1789", "28/6/1750", "1/1/1905", "A"],
+    [16, "Hai giao hưởng của Glinka đặt nền móng cho giao hưởng cổ điển Nga mang tính dân gian là?", "Kamarinskaia và Đêm ở Madrid", "Thế giới mới và Bỏ dở", "Anh hùng và Định mệnh", "Biển và Mây", "A"],
+    [17, "Trường phái Petersburg (Nga) tập trung khai thác chất liệu âm nhạc nào?", "Dân ca nông thôn Nga", "Nhạc jazz", "Nhạc Ý", "Nhạc nhà thờ", "A"],
+    [18, "Người khai sinh trường phái âm nhạc Maskva là ai?", "Glinka", "Griguri Rubinstein", "Tchaikovsky", "Stravinsky", "B"],
+    [19, "Trường phái Ấn tượng ra đời ở nước nào, cuối thập niên 90 TK XIX?", "Đức", "Pháp", "Nga", "Ý", "B"],
+    [20, "Âm nhạc Ấn tượng ưa thích khai thác bộ nhạc cụ nào?", "Bộ gõ", "Bộ dây", "Bộ đồng", "Bộ gỗ", "A"],
+    [21, "Sắc thái cường độ thường dùng trong âm nhạc Ấn tượng là?", "f, ff, fff", "mp, p, pp", "sfz mạnh", "crescendo lớn", "B"],
+    [22, "Âm nhạc Ấn tượng thường dùng các chồng âm nhiều nốt nào?", "hợp âm 3", "hợp âm 7, 9, 11", "hợp âm rải", "quãng 8", "B"],
+    [23, "Nhà văn đặt nền móng cho chủ nghĩa hiện thực XHCN Nga với tiểu thuyết 'Người mẹ' (1906)?", "Tolstoi", "Maxime Gorky", "Tchekhov", "Dostoievski", "B"],
+    [24, "Từ 'Ấn tượng' trong âm nhạc bắt nguồn từ hội họa của nhóm họa sĩ Pháp đứng đầu bởi ai?", "Picasso", "Monet", "Van Gogh", "Renoir", "B"],
+  ],
+  "DE07": [
+    [1, "Điệu thức Misolidien (loại trưởng) có đặc điểm gì?", "Bậc 7 hạ nửa cung", "Bậc 4 lên nửa cung", "Bậc 2 hạ nửa cung", "Bậc 6 lên nửa cung", "A"],
+    [2, "Điệu thức Lidien (loại trưởng) có đặc điểm gì?", "Bậc 7 hạ nửa cung", "Bậc 4 lên nửa cung", "Bậc 2 hạ nửa cung", "Bậc 6 lên nửa cung", "B"],
+    [3, "Điệu thức Frigien (loại thứ) có đặc điểm gì?", "Bậc 7 hạ nửa cung", "Bậc 4 lên nửa cung", "Bậc 2 hạ nửa cung", "Bậc 6 lên nửa cung", "C"],
+    [4, "Điệu thức Dorien (loại thứ) có đặc điểm gì?", "Bậc 7 hạ nửa cung", "Bậc 4 lên nửa cung", "Bậc 2 hạ nửa cung", "Bậc 6 lên nửa cung", "D"],
+    [5, "Người mở đầu opera Lãng mạn dân tộc Đức với vở 'Mũi tên thần' (1820) là ai?", "Wagner", "Weber", "Brahms", "Mendelssohn", "B"],
+    [6, "Wagner sáng tác tổng cộng bao nhiêu vở opera?", "9", "13", "24", "6", "B"],
+    [7, "Vở opera nào sau đây KHÔNG phải của Wagner?", "Lohengrin", "Tannhauser", "Tristan và Isole", "Con đầm bích", "D"],
+    [8, "Cuốn sách lý luận 'Nghệ thuật và cách mạng' (1849) do ai viết?", "Schumann", "Wagner", "Liszt", "Berlioz", "B"],
+    [9, "Wagner mở rộng phần bè trầm của bộ đồng trong dàn nhạc bằng nhạc cụ nào?", "Tuba", "Flute", "Harpe", "Violon", "A"],
+    [10, "Năm 1849, Wagner tham gia cuộc khởi nghĩa nào rồi phải trốn sang Thụy Sĩ?", "Khởi nghĩa Dresden", "Khởi nghĩa Paris", "Khởi nghĩa Vienne", "Khởi nghĩa Budapest", "A"],
+    [11, "Cha của Brahms làm nghề gì?", "Thợ thủ công", "Nhạc công kèn cor và contre basse", "Giáo viên", "Thương nhân", "B"],
+    [12, "Brahms KHÔNG sáng tác thể loại nào sau đây?", "Giao hưởng", "Opéra", "Concerto", "Ca khúc", "B"],
+    [13, "Prélude nổi tiếng của Debussy mô tả thần Điền dã có tên là gì?", "Giấc nghỉ trưa của thần Điền dã", "Giao hưởng Biển", "Góc nhi đồng", "Những bức tranh khắc gỗ", "A"],
+    [14, "Liên khúc piano 'Góc nhi đồng' (1908) là của nhạc sĩ nào?", "Ravel", "Debussy", "Stravinsky", "Chopin", "B"],
+    [15, "Debussy viết bao nhiêu bản prélude cho piano?", "12", "24", "48", "6", "B"],
+    [16, "Âm nhạc của Stravinsky được chia làm mấy thời kỳ?", "2", "3", "4", "5", "B"],
+    [17, "Thời kỳ đầu trong sáng tác của Stravinsky theo phong cách nào?", "néo-primitivism (dân gian thô sơ)", "néo-classicism", "dodécaphone", "Ấn tượng", "A"],
+    [18, "Thời kỳ cuối của Stravinsky sử dụng kỹ thuật sáng tác nào?", "Bình quân luật", "dodécaphone (chuỗi 12 âm)", "Phức điệu nghiêm ngặt", "Ngẫu hứng jazz", "B"],
+    [19, "Stravinsky thường sử dụng các loại nhịp phức tạp nào?", "2, 3, 4 phách", "7, 11, 13 phách", "6, 8 phách", "Chỉ nhịp 4/4", "B"],
+    [20, "Vở opéra nổi tiếng của Shostakovich có tên là gì?", "Katarina Ismailova", "Con đầm bích", "Boris Godunov", "Cây sáo thần", "A"],
+    [21, "Shostakovich nhận giải thưởng Lênin bao nhiêu lần?", "2 lần", "3 lần", "5 lần", "1 lần", "C"],
+    [22, "Nét giai điệu điển hình trong âm nhạc Shostakovich là gì?", "Giai điệu đi lên", "Giai điệu đi xuống", "Giai điệu nhảy quãng 8", "Giai điệu tĩnh tại", "B"],
+    [23, "Nhạc sĩ Nga nào (cùng thời Scriabin) sáng tác nhiều tác phẩm mang đậm nét dân tộc Nga đầu TK XX?", "Rachmaninov", "Glinka", "Borodin", "Mussorgsky", "A"],
+    [24, "Chương trình 'Ballet Nga' đặt Stravinsky viết nhạc do ai tổ chức?", "Diaghilev", "Rubinstein", "Von Meck", "Rimsky Korsakov", "A"],
+  ],
 };
-
-var HEADER = ["ID", "Question", "OptionA", "OptionB", "OptionC", "OptionD", "Answer"];
+var HEADER = ["ID","Question","OptionA","OptionB","OptionC","OptionD","Answer"];
 
 function seedQuiz() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var created = [];
+  var made = [];
   Object.keys(QUIZ_DATA).forEach(function (code) {
     var old = ss.getSheetByName(code);
     if (old) ss.deleteSheet(old);
     var sheet = ss.insertSheet(code);
-    var rows = QUIZ_DATA[code];
-    var values = [HEADER].concat(rows);
+    var values = [HEADER].concat(QUIZ_DATA[code]);
     var range = sheet.getRange(1, 1, values.length, HEADER.length);
-    range.setNumberFormat("@"); // ép TEXT: "28/6/1750" không bị đổi thành Date
+    range.setNumberFormat("@");
     range.setValues(values);
-    // Định dạng dòng tiêu đề
     sheet.getRange(1, 1, 1, HEADER.length)
       .setFontWeight("bold").setBackground("#16233b").setFontColor("#ffffff");
     sheet.setFrozenRows(1);
-    sheet.autoResizeColumns(1, HEADER.length);
-    created.push(code + " (" + rows.length + " cau)");
+    made.push(code + " (" + QUIZ_DATA[code].length + ")");
   });
-
-  // Tạo sẵn sheet Results nếu chưa có
   if (!ss.getSheetByName("Results")) {
     var rs = ss.insertSheet("Results");
-    rs.appendRow(["Thoi gian", "Ho ten", "Ma de", "Diem", "Tong cau",
-                  "Phan tram", "Thoi luong (giay)", "Chi tiet"]);
-    rs.getRange(1, 1, 1, 8).setFontWeight("bold");
+    rs.appendRow(["Thoi gian","Ho ten","Ma de","Diem","Tong cau","Phan tram","Thoi luong (giay)","Chi tiet"]);
+    rs.getRange(1,1,1,8).setFontWeight("bold");
   }
-
-  SpreadsheetApp.getUi().alert("Da tao xong:\n" + created.join("\n"));
+  SpreadsheetApp.getUi().alert("Da tao: " + made.join(", "));
 }
