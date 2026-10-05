@@ -56,6 +56,41 @@ function esc(s) {
 
 function rightKey(q) { return String(q.answer).trim().toUpperCase(); }
 
+/* Số ĐOẠN VĂN điền đục lỗ lấy ngẫu nhiên mỗi lần khởi tạo */
+const FILL_PASSAGES = 5;
+
+/* Chuẩn hoá đáp án điền: bỏ qua HOA/thường + khoảng trắng thừa,
+   NHƯNG giữ nguyên dấu tiếng Việt (chính tả phải đúng). */
+function normFill(s) {
+  return String(s == null ? "" : s).trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+/* Đúng 1 chỗ trống? (so với đáp án chính + biến thể) */
+function blankCorrect(blank, val) {
+  const n = normFill(val);
+  if (!n) return false;
+  const list = blank.accept && blank.accept.length ? blank.accept : [blank.answer];
+  return list.some((a) => normFill(a) === n);
+}
+
+/* Chấm 1 câu -> {got, max}. Đoạn điền tính điểm theo từng chỗ trống. */
+function gradeQuestion(q, ans) {
+  if (q.type === "fill") {
+    let got = 0;
+    q.blanks.forEach((b, i) => { if (blankCorrect(b, ans && ans[i])) got++; });
+    return { got, max: q.blanks.length };
+  }
+  return { got: String(ans || "").toUpperCase() === rightKey(q) ? 1 : 0, max: 1 };
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 function setBtnLoading(btn, on) {
   btn.disabled = on;
   btn.classList.toggle("is-loading", on);
@@ -139,6 +174,46 @@ studyBtn.addEventListener("click", async () => {
 
 statsBtn.addEventListener("click", showStats);
 
+const fillBtn = $("#fill-btn");
+fillBtn.addEventListener("click", startFill);
+
+async function startFill() {
+  const name = nameInput.value.trim();
+  if (!name) return setStatus(startNote, "Nhập tên trước khi làm bài điền.", "error");
+  if (GAS_URL.startsWith("DÁN_URL"))
+    return setStatus(startNote, "Chưa cấu hình GAS_URL trong script.js.", "error");
+
+  setBtnLoading(fillBtn, true);
+  setStatus(startNote, "Đang tạo đề điền đục lỗ ngẫu nhiên…");
+  try {
+    const res = await fetch(`${GAS_URL}?action=getFill`);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || "Không tải được pool câu điền.");
+    if (!Array.isArray(data.items) || !data.items.length)
+      throw new Error("Pool câu điền đang trống.");
+
+    const pool = data.items.map((it) => ({
+      type: "fill",
+      title: it.title || "",
+      passage: it.passage,
+      blanks: it.blanks || [],
+    })).filter((q) => q.blanks.length);
+    shuffle(pool);                                   // ngẫu nhiên mỗi lần
+    const n = Math.min(FILL_PASSAGES, pool.length);
+    const questions = pool.slice(0, n);
+    const blanks = questions.reduce((s, q) => s + q.blanks.length, 0);
+
+    state.code = "FILL"; state.name = name;
+    state.examQuestions = questions; state.examDuration = blanks * 40;
+    setStatus(startNote, "");
+    beginQuiz({ mode: "exam", questions, duration: blanks * 40 });
+  } catch (err) {
+    setStatus(startNote, err.message || "Có lỗi xảy ra.", "error");
+  } finally {
+    setBtnLoading(fillBtn, false);
+  }
+}
+
 function renderStartBest() {
   const h = loadHistory();
   if (!h.length) { startBest.innerHTML = ""; return; }
@@ -170,9 +245,11 @@ function beginQuiz({ mode, questions, duration }) {
 
   showScreen("quiz");
   qTotal.textContent = questions.length;
-  quizMeta.textContent = state.timed
-    ? `Mã đề ${state.code} · ${state.name}`
-    : `Luyện tập câu sai · ${questions.length} câu`;
+  quizMeta.textContent = !state.timed
+    ? `Luyện tập câu sai · ${questions.length} câu`
+    : state.code === "FILL"
+      ? `Điền đục lỗ · ${state.name}`
+      : `Mã đề ${state.code} · ${state.name}`;
 
   timerEl.classList.toggle("is-hidden", !state.timed);
   if (state.timed) {
@@ -210,20 +287,50 @@ function renderQuestion() {
   qCounter.textContent = idx + 1;
   progressFill.style.width = ((idx + 1) / state.questions.length) * 100 + "%";
   qText.textContent = q.question;
-
   optionsEl.innerHTML = "";
-  ["A", "B", "C", "D"].forEach((key) => {
-    const label = q["option" + key];
-    if (label == null || label === "") return;
-    const chosen = state.answers[idx] === key;
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "option" + (chosen ? " is-selected" : "");
-    btn.innerHTML = `<span class="option-key">${key}</span><span class="option-text"></span>`;
-    btn.querySelector(".option-text").textContent = label;
-    btn.addEventListener("click", () => { state.answers[idx] = key; renderQuestion(); });
-    optionsEl.appendChild(btn);
-  });
+
+  if (q.type === "fill") {
+    qText.textContent = `Điền các từ còn thiếu trong đoạn (${q.blanks.length} chỗ)`;
+    if (!Array.isArray(state.answers[idx])) state.answers[idx] = [];
+
+    const cloze = document.createElement("div");
+    cloze.className = "cloze";
+    const parts = q.passage.split(/_{2,}/);   // mỗi "____" = 1 chỗ trống
+    parts.forEach((p, i) => {
+      if (p) cloze.appendChild(document.createTextNode(p));
+      if (i < parts.length - 1) {
+        const wrap = document.createElement("span");
+        wrap.className = "blank";
+        const no = document.createElement("span");
+        no.className = "blank-no";
+        no.textContent = "(" + (i + 1) + ")";
+        wrap.appendChild(no);
+        wrap.appendChild(makeFillInput(idx, i));
+        cloze.appendChild(wrap);
+      }
+    });
+    optionsEl.appendChild(cloze);
+
+    const note = document.createElement("div");
+    note.className = "fill-note";
+    note.textContent = "Không phân biệt hoa/thường · phải đúng chính tả, kể cả dấu · Enter để sang chỗ tiếp.";
+    optionsEl.appendChild(note);
+
+    setTimeout(() => { const el = cloze.querySelector("input"); if (el) el.focus(); }, 0);
+  } else {
+    ["A", "B", "C", "D"].forEach((key) => {
+      const label = q["option" + key];
+      if (label == null || label === "") return;
+      const chosen = state.answers[idx] === key;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "option" + (chosen ? " is-selected" : "");
+      btn.innerHTML = `<span class="option-key">${key}</span><span class="option-text"></span>`;
+      btn.querySelector(".option-text").textContent = label;
+      btn.addEventListener("click", () => { state.answers[idx] = key; renderQuestion(); });
+      optionsEl.appendChild(btn);
+    });
+  }
 
   prevBtn.disabled = idx === 0;
   const isLast = idx === state.questions.length - 1;
@@ -238,10 +345,49 @@ prevBtn.addEventListener("click", () => {
 nextBtn.addEventListener("click", () => {
   if (state.current < state.questions.length - 1) { state.current += 1; renderQuestion(); }
 });
+function goNextOrSubmit() {
+  if (state.current < state.questions.length - 1) { state.current += 1; renderQuestion(); }
+  else submitBtn.click();
+}
+
+/* Ô nhập cho 1 chỗ trống thứ b của câu idx (gắn với state.answers[idx][b]) */
+function makeFillInput(idx, b) {
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "fill-input inline";
+  input.placeholder = "…";
+  input.autocomplete = "off";
+  input.spellcheck = false;
+  if (!Array.isArray(state.answers[idx])) state.answers[idx] = [];
+  input.value = state.answers[idx][b] || "";
+  input.setAttribute("aria-label", "Chỗ trống " + (b + 1));
+  input.dataset.blank = b;
+  input.addEventListener("input", () => {
+    if (!Array.isArray(state.answers[idx])) state.answers[idx] = [];
+    state.answers[idx][b] = input.value;
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const inputs = Array.from(optionsEl.querySelectorAll(".fill-input"));
+    const pos = inputs.indexOf(input);
+    if (pos > -1 && pos < inputs.length - 1) inputs[pos + 1].focus();
+    else goNextOrSubmit();
+  });
+  return input;
+}
+
+function hasAnswer(q, a) {
+  return q.type === "fill"
+    ? Array.isArray(a) && a.some((x) => x && x.trim())
+    : !!a;
+}
 submitBtn.addEventListener("click", () => {
-  const unanswered = state.questions.length - Object.keys(state.answers).length;
+  const answered = state.questions.reduce((n, q, i) => n + (hasAnswer(q, state.answers[i]) ? 1 : 0), 0);
+  const unanswered = state.questions.length - answered;
+  const word = state.questions[0] && state.questions[0].type === "fill" ? "đoạn" : "câu";
   const msg = unanswered
-    ? `Bạn còn ${unanswered} câu chưa trả lời. ${state.mode === "practice" ? "Kết thúc" : "Nộp bài"} luôn?`
+    ? `Bạn còn ${unanswered} ${word} chưa làm. ${state.mode === "practice" ? "Kết thúc" : "Nộp bài"} luôn?`
     : (state.mode === "practice" ? "Kết thúc luyện tập?" : "Nộp bài và xem kết quả?");
   if (confirm(msg)) finishQuiz(false);
 });
@@ -265,15 +411,15 @@ function finishQuiz(timedOut) {
   if (state.timed) clearInterval(state.timerId);
 
   const qs = state.questions, ans = state.answers;
-  let correct = 0; const wrong = [];
+  let got = 0, max = 0; const wrong = [];
   qs.forEach((q, i) => {
-    const picked = ans[i] || "";
-    if (picked === rightKey(q)) correct++;
-    else wrong.push({ q, picked: picked || "—" });
+    const g = gradeQuestion(q, ans[i]);
+    got += g.got; max += g.max;
+    if (g.got < g.max) wrong.push({ q, picked: ans[i] });
   });
 
-  const total = qs.length;
-  const percent = Math.round((correct / total) * 100);
+  const correct = got, total = max;
+  const percent = total ? Math.round((got / total) * 100) : 0;
   // Giới hạn 0..24h để thống kê không bị méo bởi edge case
   const durationSec = Math.max(0, Math.min(86400, Math.round((Date.now() - state.startedAt) / 1000)));
   state.lastWrong = wrong.map((w) => w.q);
@@ -287,7 +433,9 @@ function finishQuiz(timedOut) {
       code: state.code, name: state.name,
       correct, total, percent, durationSec,
       wrong: wrong.map((w) => ({
-        question: w.q.question, answer: rightKey(w.q), picked: w.picked,
+        question: w.q.type === "fill" ? (w.q.title || "Đoạn văn") : w.q.question,
+        answer: w.q.type === "fill" ? "" : rightKey(w.q),
+        picked: w.q.type === "fill" ? "" : (w.picked || "—"),
       })),
     });
     renderStartBest();
@@ -299,6 +447,7 @@ function finishQuiz(timedOut) {
 
 function renderResult({ correct, total, percent, durationSec, timedOut }) {
   const wrong = total - correct;
+  const isFill = state.questions[0] && state.questions[0].type === "fill";
   scoreBig.textContent = `${correct}/${total}`;
   scoreLabel.textContent = percent >= 80 ? "Xuất sắc" : percent >= 50 ? "Đạt" : "Cần ôn thêm";
   resultRing.style.setProperty("--pct", percent);
@@ -307,25 +456,35 @@ function renderResult({ correct, total, percent, durationSec, timedOut }) {
     (timedOut ? " · hết giờ" : "") +
     (state.mode === "practice" ? " · luyện tập" : "");
 
+  const okLabel = isFill ? "Chỗ đúng" : "Câu đúng";
+  const noLabel = isFill ? "Chỗ sai" : "Câu sai";
   resultTiles.innerHTML = `
-    <div class="tile ok"><div class="tile-num">${correct}</div><div class="tile-label">Câu đúng</div></div>
-    <div class="tile no"><div class="tile-num">${wrong}</div><div class="tile-label">Câu sai</div></div>
+    <div class="tile ok"><div class="tile-num">${correct}</div><div class="tile-label">${okLabel}</div></div>
+    <div class="tile no"><div class="tile-num">${wrong}</div><div class="tile-label">${noLabel}</div></div>
     <div class="tile am"><div class="tile-num">${fmtTime(durationSec)}</div><div class="tile-label">Thời gian</div></div>`;
 
   // Danh sách xem lại (mở rộng được)
   reviewList.innerHTML = state.questions.map((q, i) => {
-    const picked = state.answers[i] || "—";
-    const right = rightKey(q);
-    const ok = picked === right;
+    const raw = state.answers[i];
+    const g = gradeQuestion(q, raw);
+    const ok = g.got === g.max;
+    let tag, qdisp;
+    if (q.type === "fill") {
+      tag = `${g.got}/${g.max}`;
+      qdisp = (q.title ? q.title + " — " : "") + q.passage.replace(/_{2,}/g, "……");
+    } else {
+      tag = ok ? "Đúng" : `${raw || "—"} → ${rightKey(q)}`;
+      qdisp = q.question;
+    }
     return `
       <li class="review-item">
         <button type="button" class="review-row ${ok ? "is-ok" : "is-no"}" data-i="${i}">
           <span class="review-idx">${i + 1}</span>
-          <span class="review-q">${esc(q.question)}</span>
-          <span class="review-tag">${ok ? "Đúng" : `${picked} → ${right}`}</span>
+          <span class="review-q">${esc(qdisp)}</span>
+          <span class="review-tag">${esc(tag)}</span>
           <span class="review-caret">▸</span>
         </button>
-        <div class="review-detail">${detailHTML(q, picked)}</div>
+        <div class="review-detail">${detailHTML(q, raw)}</div>
       </li>`;
   }).join("");
 
@@ -340,7 +499,34 @@ function renderResult({ correct, total, percent, durationSec, timedOut }) {
   submitNote.textContent = "";
 }
 
-function detailHTML(q, picked) {
+function detailHTML(q, ans) {
+  if (q.type === "fill") {
+    // Đoạn văn hoàn chỉnh: điền sẵn đáp án đúng, tô xanh chỗ bạn đúng, đỏ chỗ sai
+    const parts = q.passage.split(/_{2,}/);
+    let html = '<div class="detail-q" style="line-height:2.2">';
+    const wrongs = [];
+    parts.forEach((p, i) => {
+      html += esc(p);
+      if (i < parts.length - 1) {
+        const b = q.blanks[i];
+        const val = (ans && ans[i]) || "";
+        const ok = blankCorrect(b, val);
+        html += `<span class="blank-no">(${i + 1})</span><span class="cloze-ans ${ok ? "ok" : "no"}">${esc(b.answer)}</span>`;
+        if (!ok) wrongs.push({ n: i + 1, answer: b.answer, picked: val });
+      }
+    });
+    html += "</div>";
+    if (wrongs.length) {
+      html += `<div class="fill-hint">Chỗ sai: ` + wrongs.map((w) =>
+        `#${w.n} bạn ghi “${w.picked ? esc(w.picked) : "trống"}”, đúng là “${esc(w.answer)}”`
+      ).join(" · ") + `</div>`;
+    } else {
+      html += `<div class="fill-hint">Bạn điền đúng tất cả ✓</div>`;
+    }
+    return html;
+  }
+
+  const picked = ans;
   const right = rightKey(q);
   let lines = "";
   ["A", "B", "C", "D"].forEach((k) => {
@@ -538,7 +724,7 @@ function missHTML(h) {
   return `<p class="section-title">Câu hay sai nhất</p><div class="miss-list">` +
     top.map((m) => `
       <div class="miss-row">
-        <span class="txt">${esc(m.question)} <span class="sub">— đáp án ${esc(m.answer)}</span></span>
+        <span class="txt">${esc(m.question)}${m.answer ? ` <span class="sub">— đáp án ${esc(m.answer)}</span>` : ""}</span>
         <span class="cnt">sai ${m.count}×</span>
       </div>`).join("") + `</div>`;
 }

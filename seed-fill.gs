@@ -1,0 +1,48 @@
+/************************************************************
+ * SEED FILL — tạo sheet "FILL" chứa pool ĐOẠN VĂN điền đục lỗ
+ * ----------------------------------------------------------
+ * Mỗi dòng là một ĐOẠN VĂN liền mạch bị khoét nhiều chỗ ("___"),
+ * giúp luyện nhớ cả mạch kiến thức.
+ *   Title    : nhãn ngắn (vd tên tác giả)
+ *   Passage  : đoạn văn, chỗ trống đánh dấu "___" theo thứ tự
+ *   Answers  : đáp án từng chỗ, ngăn nhau bằng "|"
+ *   Accept   : (tuỳ chọn) biến thể từng chỗ; các chỗ ngăn "|", biến thể trong 1 chỗ ngăn ";"
+ *
+ * CÁCH DÙNG: Apps Script > file mới > dán > chọn hàm "seedFill" > Run.
+ * App random 5 đoạn mỗi lần vào chế độ "Điền đục lỗ". Chạy lại sẽ ghi đè.
+ ************************************************************/
+
+var FILL_DATA = [
+  ["Bach", "Johann Sebastian Bach là nhạc sĩ ___ người Đức, sinh năm ___ tại ___ và mất năm ___ tại ___. Ông chơi đàn ___ rất giỏi, sáng tác 48 cặp Prélude và ___. Âm nhạc của Bach chủ yếu viết theo lối ___, với bản messa nổi tiếng nhất là Messa ___.", "Tiền cổ điển|1685|Eisenach|1750|Leipzig|orgue|Fugue|phức điệu|h moll", "|||||đàn orgue|||"],
+  ["Haydn", "___ có công hoàn thiện thể loại giao hưởng cổ điển gồm ___ chương. Ông sinh tại làng Rohrau, miền Nam nước ___, và mất năm ___. Haydn sáng tác trên ___ bản giao hưởng, nổi bật nhất là 12 giao hưởng mang tên thành phố ___. Hai oratorio nổi tiếng của ông là 'Đấng sáng tạo muôn loài' và '___'.", "Haydn|4|Áo|1809|100|Luân đôn|Bốn mùa", "Joseph Haydn||||trên 100|London|"],
+  ["Mozart", "___ là nhạc sĩ thần đồng của trường phái Cổ điển Vienne, sinh tại ___ (nước Áo) và biểu diễn thành công từ lúc ___ tuổi. Ba giao hưởng tiêu biểu của ông là số 39, 40 và ___. Mozart kế tục công cuộc cải cách nhạc kịch của ___, với các vở opéra nổi tiếng như 'Đám cưới Figaro' và '___'.", "Mozart|Salzbourg|6|41|Gluck|Cây sáo thần", "Wolfgang Amadeus Mozart;W.A. Mozart|||||"],
+  ["Beethoven", "___ là cầu nối giữa trường phái Cổ điển và ___. Ông sáng tác ___ bản giao hưởng, trong đó giao hưởng số 3 tên '___', số 5 tên 'Định mệnh' và số 9 tên '___'. Beethoven còn viết ___ bản sonate cho piano. Năm ___, ông bị điếc nặng nhưng vẫn tiếp tục sáng tác.", "Beethoven|Lãng mạn|9|Anh hùng|Khải hoàn ca|32|1802", "Ludwig van Beethoven||||||"],
+  ["Schubert", "___ là nhạc sĩ người ___ mở đầu trường phái Lãng mạn bằng thể loại ca khúc. Ông sáng tác trên ___ ca khúc, nổi bật có hai liên ca khúc 'Cô chủ cối xay xinh đẹp' và '___'. Giao hưởng số 8 của ông mang tên '___' vì chỉ có ___ chương.", "Schubert|Áo|600|Con đường mùa đông|Bỏ dở|2", "Franz Schubert||trên 600|||"],
+  ["Mendelssohn & Schumann", "___ là nhạc sĩ Đức sáng tạo thể loại overture hòa tấu và đứng đầu trường phái ___. Năm 17 tuổi ông viết overture '___'. Cùng thời, ___ làm tổng biên tập tạp chí '___' năm 1834 và sáng tác liên ca khúc '___' theo thơ Heine.", "Mendelssohn|Leipzig|Giấc mộng đêm hè|Schumann|Âm nhạc mới|Tình yêu thi sĩ", "|||||"],
+  ["Chopin", "___ là nhạc sĩ lãng mạn dân tộc ___, được xem là bậc thầy của cây đàn ___. Ông tốt nghiệp nhạc viện Varsovie năm ___ với thầy Elsner. Sang ___ sinh sống, ông gắn bó nhiều năm với nữ văn sĩ ___.", "Chopin|Ba lan|piano|1829|Paris|George Sand", "Frédéric Chopin;Frederic Chopin|||||"],
+  ["Liszt", "___ là nhạc sĩ người ___ sáng tạo thể loại giao hưởng thơ. Ông đứng đầu trường phái ___ (đối lập với Leipzig). Liszt sáng tác ___ bản rhapsodie Hungari; hai giao hưởng tiêu đề nổi tiếng của ông là Faust và ___. Năm 1865, ông trở thành ___.", "Liszt|Hungari|Weimar|19|Dante|linh mục", "Franz Liszt|||||"],
+  ["Grieg", "___ là người sáng lập nền âm nhạc kinh điển nước ___. Ông học tại nhạc viện ___ giai đoạn 1858–1862 và được nhạc sĩ ___ giúp đỡ, giới thiệu. Tổ khúc dàn nhạc nổi tiếng nhất của Grieg là '___'.", "Grieg|Na uy|Leipzig|Liszt|Peer Gynt", "Edvard Grieg||||"],
+  ["Dvořák – Wagner – Brahms", "___ là nhạc sĩ Tiệp khắc nổi tiếng với giao hưởng số 9 mang tên '___'. Tại Đức, ___ là đại diện cuối cùng của trường phái Lãng mạn, có công cải cách opera và dùng hệ thống âm hình ___. Người được xem là kế tục Beethoven là ___, tác giả của Requiem Nước Đức gồm ___ chương.", "Dvořák|Thế giới mới|Wagner|chủ đạo|Brahms|7", "Dvorak;Antonin Dvorak||Richard Wagner||Johannes Brahms|"],
+  ["Âm nhạc Nga", "Hai vở nhạc kịch của Glinka đặt nền móng cho nhạc kịch Nga là 'Ivan Soussanine' và '___'. Nhạc sĩ tiêu biểu nhất của trường phái ___ là ___, người sáng tác ___ bản symphony và vở ballet nổi tiếng '___'. Từ năm 1878, ông được bà triệu phú ___ bảo trợ về kinh tế.", "Russlan và Lioudmila|Maskva|Tchaikovsky|6|Hồ thiên nga|Von Meck", "Ruslan và Lyudmila||Piotr Tchaikovsky;Pyotr Tchaikovsky|||"],
+  ["Ấn tượng & thế kỷ XX", "Trường phái Ấn tượng âm nhạc ra đời ở nước ___, với người mở đầu là ___. Tác phẩm dàn nhạc nổi bật của ông là giao hưởng '___'. Nhạc sĩ ___ đưa ra phương pháp đa công năng, đa điệu thức, đa tiết tấu và nổi tiếng với ba ballet 'Chim lửa', 'Petrouchka', '___'. Ngọn cờ đầu của âm nhạc Xô viết là ___, người sáng tác ___ bản giao hưởng, trong đó số 7 mang tên '___'.", "Pháp|Debussy|Biển|Stravinsky|Mùa xuân thần thánh|Shostakovich|15|Leningrad", "|Claude Debussy||Igor Stravinsky||Dmitri Shostakovich||"],
+];
+
+function seedFill() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var old = ss.getSheetByName("FILL");
+  if (old) ss.deleteSheet(old);
+  var sheet = ss.insertSheet("FILL");
+  var header = ["Title", "Passage", "Answers", "Accept"];
+  var values = [header].concat(FILL_DATA);
+  var range = sheet.getRange(1, 1, values.length, header.length);
+  range.setNumberFormat("@");               // ép TEXT: giữ nguyên dấu & số
+  range.setValues(values);
+  range.setVerticalAlignment("top").setWrap(true);
+  sheet.getRange(1, 1, 1, header.length)
+    .setFontWeight("bold").setBackground("#16233b").setFontColor("#ffffff");
+  sheet.setFrozenRows(1);
+  sheet.setColumnWidth(1, 150);
+  sheet.setColumnWidth(2, 520);
+  sheet.setColumnWidth(3, 300);
+  SpreadsheetApp.getUi().alert("Da tao sheet FILL voi " + FILL_DATA.length + " doan dien.");
+}

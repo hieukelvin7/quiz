@@ -24,6 +24,7 @@ var CONFIG_SHEET  = "Config";
 function doGet(e) {
   try {
     var action = (e.parameter.action || "getQuiz");
+    if (action === "getFill") return getFill(e);
     if (action !== "getQuiz") return json({ ok: false, error: "Hành động không hợp lệ." });
 
     var code = (e.parameter.code || "").trim();
@@ -69,6 +70,63 @@ function doGet(e) {
       duration: getDurationSeconds(ss, code, questions.length),
       questions: questions,
     });
+  } catch (err) {
+    return json({ ok: false, error: String(err) });
+  }
+}
+
+/* ---------- GET: lấy pool đoạn văn điền đục lỗ ---------- */
+/* Sheet "FILL" (hoặc sheet theo ?code=...), cột:
+   Title | Passage | Answers | Accept
+   - Passage: đoạn văn, mỗi chỗ trống đánh dấu "___" (>=2 gạch dưới), theo thứ tự.
+   - Answers: đáp án đúng cho từng chỗ, ngăn nhau bằng "|" (đúng thứ tự chỗ trống).
+   - Accept:  (tuỳ chọn) đáp án thay thế theo từng chỗ, các chỗ ngăn bằng "|",
+              trong 1 chỗ nhiều biến thể ngăn bằng ";".  vd: "Claude Debussy||Monet"
+   - Title:   (tuỳ chọn) nhãn ngắn của đoạn (vd tên tác giả). */
+function getFill(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var name = (e.parameter.code || "FILL").trim();
+    var sheet = ss.getSheetByName(name) || ss.getSheetByName("FILL");
+    if (!sheet) return json({ ok: false, error: "Chưa có sheet 'FILL' chứa đoạn điền." });
+
+    var rows = sheet.getDataRange().getDisplayValues();
+    if (rows.length < 2) return json({ ok: false, error: "Pool điền đục lỗ đang trống." });
+
+    var header = rows[0].map(function (h) { return String(h).trim().toLowerCase(); });
+    var col = {
+      title: idx(header, ["title", "nhãn", "nhan", "chủ đề", "chude"]),
+      passage: idx(header, ["passage", "đoạn", "doan", "prompt", "câu", "text"]),
+      answers: idx(header, ["answers", "answer", "đáp án", "dapan"]),
+      accept: idx(header, ["accept", "chấp nhận", "alt"]),
+    };
+
+    var items = [];
+    for (var i = 1; i < rows.length; i++) {
+      var r = rows[i];
+      var passage = col.passage >= 0 ? String(r[col.passage]).trim() : "";
+      var ansRaw = col.answers >= 0 ? String(r[col.answers]).trim() : "";
+      if (!passage || !ansRaw) continue;
+
+      var answers = ansRaw.split("|").map(function (a) { return a.trim(); });
+      var acceptRaw = col.accept >= 0 ? String(cell(r, col.accept)) : "";
+      var acceptParts = acceptRaw.split("|");
+
+      var blanks = answers.map(function (ans, k) {
+        var list = [ans];
+        var ap = (acceptParts[k] || "").trim();
+        if (ap) ap.split(";").forEach(function (a) { a = a.trim(); if (a) list.push(a); });
+        return { answer: ans, accept: list };
+      });
+
+      items.push({
+        title: col.title >= 0 ? String(cell(r, col.title)).trim() : "",
+        passage: passage,
+        blanks: blanks,
+      });
+    }
+
+    return json({ ok: true, code: name, count: items.length, items: items });
   } catch (err) {
     return json({ ok: false, error: String(err) });
   }

@@ -316,6 +316,49 @@
   .option.is-correct .option-key { background: var(--teal); color: #042b22; }
   .option.static { cursor: default; }
 
+  /* Ô điền đục lỗ */
+  .fill-input {
+    width: 100%; font: inherit; color: var(--text); background: var(--ink);
+    border: 1.5px solid var(--line); border-radius: var(--radius);
+    padding: 16px; font-size: 17px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .fill-input::placeholder { color: #5e6f8a; }
+  .fill-input:focus { outline: none; border-color: var(--amber); box-shadow: 0 0 0 4px rgba(245,179,1,.14); }
+
+  /* Câu cloze: điền ngay trong câu */
+  .cloze {
+    font-family: var(--sans); font-weight: 400;
+    font-size: 18px; line-height: 2.05; letter-spacing: 0; margin-bottom: 20px;
+  }
+  .fill-input.inline {
+    display: inline-block; width: 120px; min-width: 60px; max-width: 100%;
+    padding: 2px 10px; font-size: 17px; font-family: var(--sans); font-weight: 500;
+    border: none; border-bottom: 2px solid var(--amber); border-radius: 7px 7px 0 0;
+    background: rgba(245,179,1,.08); color: var(--text); vertical-align: baseline;
+    margin: 0 2px;
+  }
+  .fill-input.inline::placeholder { color: var(--amber); opacity: .6; }
+  .fill-input.inline:focus { box-shadow: none; background: rgba(245,179,1,.16); }
+  .blank { white-space: nowrap; }
+  .blank-no {
+    color: var(--amber); font-weight: 700; font-size: 12px;
+    vertical-align: super; margin-right: 1px;
+  }
+
+  .cloze-ans { padding: 1px 8px; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+  .cloze-ans.ok { background: rgba(45,212,167,.16); color: var(--teal); }
+  .cloze-ans.no { background: rgba(242,85,90,.16); color: var(--red); }
+
+  .fill-hint { margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .fill-note { margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .opt-line.fill-line .opt-txt { font-weight: 500; }
+  #fill-btn { width: 100%; margin-top: 12px; }
+  #fill-btn .dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 2px;
+    background: var(--teal); margin-right: 8px; vertical-align: middle;
+  }
+
   /* Nút trên màn kết quả */
   .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
   #retry-wrong-btn { grid-column: 1 / -1; }
@@ -410,6 +453,7 @@
         <button id="study-btn" type="button" class="btn btn-ghost">Ôn tập đáp án</button>
         <button id="stats-btn" type="button" class="btn btn-ghost">Thống kê</button>
       </div>
+      <button id="fill-btn" type="button" class="btn btn-ghost"><span class="dot"></span>Điền đục lỗ (ngẫu nhiên)</button>
       <p id="start-note" class="field-note"></p>
       <p id="start-best" class="hint-best"></p>
     </div>

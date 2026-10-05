@@ -13,6 +13,20 @@ Sinh tự động từ tài liệu **ôn thi LSAN 2025.ppt**.
 Mỗi file CSV có cột: `ID | Question | OptionA | OptionB | OptionC | OptionD | Answer`
 (Answer là đáp án đúng: A/B/C/D) — đúng định dạng backend `code.gs` yêu cầu.
 
+### Điền đục lỗ — ĐOẠN VĂN (cloze) — `FILL.csv` / `seed-fill.gs`
+- **12 đoạn văn** liền mạch, mỗi đoạn khoét **5–9 chỗ trống** (78 chỗ tổng), sheet **`FILL`**.
+- Cột: `Title | Passage | Answers | Accept`
+  - `Passage`: đoạn văn, mỗi chỗ trống đánh dấu **`___`** (theo thứ tự).
+  - `Answers`: đáp án từng chỗ, ngăn nhau bằng **`|`** (đúng thứ tự chỗ trống).
+  - `Accept`: *(tuỳ chọn)* biến thể từng chỗ — các chỗ ngăn `|`, nhiều biến thể trong 1 chỗ ngăn `;`.
+  - `Title`: nhãn ngắn (vd tên tác giả).
+- App **random 5 đoạn mỗi lần** vào chế độ "Điền đục lỗ"; chấm **theo từng chỗ** (mỗi chỗ 1 điểm).
+- Chấm: **bỏ qua hoa/thường** nhưng **bắt buộc đúng chính tả, kể cả dấu**.
+- Tự thêm đoạn: viết đoạn đầy đủ, thay từ cần khoét bằng `___`, điền `Answers` đúng thứ tự.
+- Nạp: Apps Script → file mới → dán `seed-fill.gs` → chọn hàm **`seedFill`** → Run.
+
+> ⚠️ Backend `getFill` đã đổi sang định dạng đoạn văn → **phải redeploy `code.gs`** (New version) và **chạy lại `seedFill`**.
+
 ---
 
 ## Cách nạp vào Google Sheet — chọn 1 trong 2
