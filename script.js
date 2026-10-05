@@ -29,7 +29,7 @@ const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 const screens = {
   start: $("#screen-start"), quiz: $("#screen-quiz"), result: $("#screen-result"),
-  study: $("#screen-study"), stats: $("#screen-stats"),
+  study: $("#screen-study"), stats: $("#screen-stats"), fillpick: $("#screen-fillpick"),
 };
 
 function showScreen(name) {
@@ -346,6 +346,15 @@ statsBtn.addEventListener("click", showStats);
 const fillBtn = $("#fill-btn");
 fillBtn.addEventListener("click", startFill);
 
+/* Nhóm đoạn điền theo tác giả/chủ đề (bỏ phần sau " – " và hậu tố "(n)") */
+function groupOf(title) {
+  return String(title || "Khác")
+    .split(" – ")[0].split(" - ")[0]
+    .replace(/\s*\(\d+\)\s*$/, "").trim() || "Khác";
+}
+
+let fillPool = [];
+
 async function startFill() {
   const name = nameInput.value.trim();
   if (!name) return setStatus(startNote, "Nhập tên trước khi làm bài điền.", "error");
@@ -353,7 +362,7 @@ async function startFill() {
     return setStatus(startNote, "Chưa cấu hình GAS_URL trong script.js.", "error");
 
   setBtnLoading(fillBtn, true);
-  setStatus(startNote, "Đang tạo đề điền đục lỗ ngẫu nhiên…");
+  setStatus(startNote, "Đang tải kho câu điền…");
   showLoader();
   try {
     const res = await fetch(`${GAS_URL}?action=getFill`);
@@ -362,27 +371,56 @@ async function startFill() {
     if (!Array.isArray(data.items) || !data.items.length)
       throw new Error("Pool câu điền đang trống.");
 
-    const pool = data.items.map((it) => ({
-      type: "fill",
-      title: it.title || "",
-      passage: it.passage,
-      blanks: it.blanks || [],
+    fillPool = data.items.map((it) => ({
+      type: "fill", title: it.title || "", passage: it.passage, blanks: it.blanks || [],
     })).filter((q) => q.blanks.length);
-    shuffle(pool);                                   // ngẫu nhiên mỗi lần
-    const n = Math.min(FILL_PASSAGES, pool.length);
-    const questions = pool.slice(0, n);
-    const blanks = questions.reduce((s, q) => s + q.blanks.length, 0);
 
-    state.code = "FILL"; state.name = name; state.instant = readInstant();
-    state.examQuestions = questions; state.examDuration = blanks * 40;
+    state.name = name;
     setStatus(startNote, "");
-    beginQuiz({ mode: "exam", questions, duration: blanks * 40 });
+    renderFillPicker();
+    showScreen("fillpick");
   } catch (err) {
     setStatus(startNote, err.message || "Có lỗi xảy ra.", "error");
   } finally {
     setBtnLoading(fillBtn, false);
     hideLoader();
   }
+}
+
+function renderFillPicker() {
+  const groups = new Map();
+  fillPool.forEach((q) => {
+    const k = groupOf(q.title);
+    groups.set(k, (groups.get(k) || 0) + 1);
+  });
+  const el = $("#fill-pick-list");
+  let html = `<button type="button" class="pick-item all" data-group="*">
+      <span class="pick-name">🎲 Tất cả (ngẫu nhiên)</span>
+      <span class="pick-sub">${Math.min(FILL_PASSAGES, fillPool.length)} đoạn mỗi lượt · ${fillPool.length} đoạn</span>
+    </button>`;
+  html += [...groups.keys()].sort((a, b) => a.localeCompare(b, "vi")).map((k) =>
+    `<button type="button" class="pick-item" data-group="${esc(k)}">
+       <span class="pick-name">${esc(k)}</span>
+       <span class="pick-sub">${groups.get(k)} đoạn</span>
+     </button>`).join("");
+  el.innerHTML = html;
+  el.querySelectorAll(".pick-item").forEach((b) =>
+    b.addEventListener("click", () => startFillWith(b.dataset.group)));
+}
+
+function startFillWith(group) {
+  let questions;
+  if (group === "*") {
+    questions = shuffle(fillPool.slice());
+    questions = questions.slice(0, Math.min(FILL_PASSAGES, questions.length));
+  } else {
+    questions = shuffle(fillPool.filter((q) => groupOf(q.title) === group));
+  }
+  if (!questions.length) return;
+  const blanks = questions.reduce((s, q) => s + q.blanks.length, 0);
+  state.code = "FILL"; state.instant = readInstant();
+  state.examQuestions = questions; state.examDuration = blanks * 40;
+  beginQuiz({ mode: "exam", questions, duration: blanks * 40 });
 }
 
 function renderStartBest() {

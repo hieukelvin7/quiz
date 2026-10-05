@@ -18,8 +18,9 @@ Mỗi file CSV có cột: `ID | Question | OptionA | OptionB | OptionC | OptionD
 (Answer là đáp án đúng: A/B/C/D) — đúng định dạng backend `code.gs` yêu cầu.
 
 ### Điền đục lỗ — ĐOẠN VĂN (cloze) — `FILL.csv` / `seed-fill.gs`
-- **37 đoạn văn** phủ ~toàn bộ tài liệu (năm, opus, danh mục tác phẩm từng nhạc sĩ) — **202 chỗ trống**, sheet **`FILL`**.
-- App random **10 đoạn mỗi lượt**; làm vài lượt sẽ quét hết tài liệu.
+- **36 đoạn văn** phủ ~toàn bộ tài liệu (năm, opus, danh mục tác phẩm từng nhạc sĩ) — **195 chỗ trống**, sheet **`FILL`**.
+- Vào "Điền đục lỗ" → **chọn tác giả/chủ đề** để luyện riêng, hoặc "Tất cả (ngẫu nhiên)" lấy **10 đoạn/lượt**.
+- Nhóm theo tác giả tự động dựa vào cột `Title` (phần trước dấu " – ").
 - Cột: `Title | Passage | Answers | Accept`
   - `Passage`: đoạn văn, mỗi chỗ trống đánh dấu **`___`** (theo thứ tự).
   - `Answers`: đáp án từng chỗ, ngăn nhau bằng **`|`** (đúng thứ tự chỗ trống).

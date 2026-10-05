@@ -475,6 +475,21 @@
   .feedback .fb-sub { display: block; color: var(--muted); font-weight: 400; margin-top: 4px; }
   .cloze-review .detail-q { font-size: 18px; }
 
+  /* ===== Chọn tác giả cho bài điền ===== */
+  .pick-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pick-item {
+    display: flex; flex-direction: column; gap: 2px; text-align: left;
+    padding: 14px 15px; border-radius: 13px; cursor: pointer;
+    background: var(--ink); border: 1.5px solid var(--line); color: var(--text); font: inherit;
+    transition: border-color .15s, transform .1s, background .15s;
+  }
+  .pick-item:hover { border-color: var(--amber); }
+  .pick-item:active { transform: scale(.99); }
+  .pick-item.all { grid-column: 1 / -1; border-color: rgba(245,179,1,.5); background: rgba(245,179,1,.07); }
+  .pick-name { font-family: var(--display); font-weight: 600; font-size: 15px; }
+  .pick-sub { font-size: 12px; color: var(--muted); }
+  @media (max-width: 460px) { .pick-list { grid-template-columns: 1fr; } }
+
   /* ================= MOBILE ================= */
   @media (max-width: 600px) {
     body { padding: 12px 10px; align-items: flex-start; }
@@ -636,6 +651,20 @@
         </div>
       </div>
       <div id="stats-body"></div>
+    </div>
+  </section>
+
+  <!-- ============ MÀN HÌNH 6: CHỌN CHỦ ĐỀ ĐIỀN ============ -->
+  <section id="screen-fillpick" class="screen">
+    <div class="card">
+      <div class="screen-head">
+        <button class="back-btn" type="button" data-back aria-label="Quay lại">←</button>
+        <div>
+          <h2>Điền đục lỗ</h2>
+          <div class="sub">Chọn tác giả / chủ đề để luyện</div>
+        </div>
+      </div>
+      <div id="fill-pick-list" class="pick-list"></div>
     </div>
   </section>
 
