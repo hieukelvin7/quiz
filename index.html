@@ -243,6 +243,26 @@
 
   /* ======= Nâng cấp: nút phụ, thống kê, ôn tập ======= */
 
+  /* Chọn môn học */
+  .subjects { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .subj {
+    display: flex; align-items: center; gap: 9px; padding: 12px 13px; cursor: pointer;
+    border-radius: 12px; background: var(--ink); border: 1.5px solid var(--line);
+    color: var(--text); font: inherit; text-align: left; transition: border-color .15s, background .15s;
+  }
+  .subj:hover { border-color: var(--muted); }
+  .subj .s-ic { font-size: 18px; line-height: 1; }
+  .subj .s-name { font-weight: 600; font-size: 14px; }
+  .subj.on { border-color: var(--amber); background: rgba(245,179,1,.08); }
+
+  /* Dropdown mã đề */
+  .code-select {
+    width: 100%; font: inherit; color: var(--text); background: var(--ink);
+    border: 1.5px solid var(--line); border-radius: var(--radius); padding: 14px 16px;
+    cursor: pointer; transition: border-color .15s, box-shadow .15s;
+  }
+  .code-select:focus { outline: none; border-color: var(--amber); box-shadow: 0 0 0 4px rgba(245,179,1,.14); }
+
   /* Hàng nút phụ ở trang chủ */
   .actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
   .hint-best { margin-top: 18px; font-size: 13px; color: var(--muted); text-align: center; }
@@ -535,7 +555,12 @@
       <span class="brand"><span class="dot"></span>PHÒNG THI</span>
       <div id="gamify" class="gamify"></div>
       <h1>Sẵn sàng làm bài?</h1>
-      <p class="lede">Nhập tên và mã đề do giáo viên cung cấp. Hệ thống sẽ tải đúng bộ câu hỏi tương ứng.</p>
+      <p class="lede">Chọn môn học, nhập tên và chọn mã đề. Hệ thống sẽ tải đúng bộ câu hỏi tương ứng.</p>
+
+      <div class="field">
+        <label>Môn học</label>
+        <div id="subjects" class="subjects"></div>
+      </div>
 
       <form id="start-form" novalidate>
         <div class="field">
@@ -543,8 +568,8 @@
           <input id="name-input" type="text" placeholder="Nguyễn Văn A" autocomplete="name" />
         </div>
         <div class="field">
-          <label for="code-input">Mã đề</label>
-          <input id="code-input" type="text" placeholder="DE01" autocomplete="off" spellcheck="false" />
+          <label for="code-select">Mã đề</label>
+          <select id="code-select" class="code-select"></select>
         </div>
         <button id="start-btn" type="submit" class="btn btn-primary">Bắt đầu làm bài</button>
       </form>

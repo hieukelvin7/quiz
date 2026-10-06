@@ -281,8 +281,32 @@ async function loadQuiz(code) {
 /* ===========================================================
    MÀN HÌNH 1 — Trang chủ
    =========================================================== */
+/* ===== MÔN HỌC ===== */
+const SUBJECTS = [
+  {
+    id: "lichsu", name: "Lịch sử âm nhạc", icon: "🎼", fillSheet: "FILL",
+    codes: [
+      ["DE01", "Bach & bối cảnh Đức"], ["DE02", "Cổ điển Vienne"],
+      ["DE03", "Lãng mạn: Schubert–Mendelssohn–Schumann"], ["DE04", "Lãng mạn: Chopin–Liszt–Grieg–Dvořák"],
+      ["DE05", "Wagner–Brahms–Tchaikovsky–Debussy–TK XX"], ["DE06", "Bối cảnh & đặc điểm các trường phái"],
+      ["DE07", "Điệu thức cổ, chi tiết & nhân vật"],
+    ],
+  },
+  {
+    id: "tieuluan", name: "Viết tiểu luận", icon: "✍️", fillSheet: "FILL_TL",
+    codes: [["TL01", "Ôn tập kiến thức tiểu luận"]],
+  },
+];
+let curSubject = SUBJECTS[0];
+try {
+  const saved = localStorage.getItem("quiz_subject");
+  const f = SUBJECTS.find((s) => s.id === saved);
+  if (f) curSubject = f;
+} catch (e) {}
+
 const startForm = $("#start-form");
-const codeInput = $("#code-input");
+const codeSelect = $("#code-select");
+const subjectsEl = $("#subjects");
 const nameInput = $("#name-input");
 const startBtn = $("#start-btn");
 const startNote = $("#start-note");
@@ -296,9 +320,26 @@ instantToggle.addEventListener("change", () => {
 });
 function readInstant() { return !!instantToggle.checked; }
 
+function renderSubjects() {
+  subjectsEl.innerHTML = SUBJECTS.map((s) =>
+    `<button type="button" class="subj ${s.id === curSubject.id ? "on" : ""}" data-sid="${s.id}">
+       <span class="s-ic">${s.icon}</span><span class="s-name">${esc(s.name)}</span>
+     </button>`).join("");
+  subjectsEl.querySelectorAll(".subj").forEach((b) =>
+    b.addEventListener("click", () => {
+      curSubject = SUBJECTS.find((s) => s.id === b.dataset.sid) || SUBJECTS[0];
+      try { localStorage.setItem("quiz_subject", curSubject.id); } catch (e) {}
+      renderSubjects(); populateCodes(); setStatus(startNote, "");
+    }));
+}
+function populateCodes() {
+  codeSelect.innerHTML = curSubject.codes.map(([c, label]) =>
+    `<option value="${esc(c)}">${esc(c)} — ${esc(label)}</option>`).join("");
+}
+
 startForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const code = codeInput.value.trim();
+  const code = codeSelect.value.trim();
   const name = nameInput.value.trim();
   if (!name) return setStatus(startNote, "Vui lòng nhập tên của bạn.", "error");
   if (!code) return setStatus(startNote, "Vui lòng nhập mã đề.", "error");
@@ -324,8 +365,8 @@ startForm.addEventListener("submit", async (e) => {
 });
 
 studyBtn.addEventListener("click", async () => {
-  const code = codeInput.value.trim();
-  if (!code) return setStatus(startNote, "Nhập mã đề để ôn tập.", "error");
+  const code = codeSelect.value.trim();
+  if (!code) return setStatus(startNote, "Chọn mã đề để ôn tập.", "error");
   setBtnLoading(studyBtn, true);
   setStatus(startNote, "Đang tải đề để ôn tập…");
   showLoader();
@@ -365,7 +406,7 @@ async function startFill() {
   setStatus(startNote, "Đang tải kho câu điền…");
   showLoader();
   try {
-    const res = await fetch(`${GAS_URL}?action=getFill`);
+    const res = await fetch(`${GAS_URL}?action=getFill&code=${encodeURIComponent(curSubject.fillSheet)}`);
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || "Không tải được pool câu điền.");
     if (!Array.isArray(data.items) || !data.items.length)
@@ -418,7 +459,7 @@ function startFillWith(group) {
   }
   if (!questions.length) return;
   const blanks = questions.reduce((s, q) => s + q.blanks.length, 0);
-  state.code = "FILL"; state.instant = readInstant();
+  state.code = curSubject.fillSheet; state.instant = readInstant();
   state.examQuestions = questions; state.examDuration = blanks * 40;
   beginQuiz({ mode: "exam", questions, duration: blanks * 40 });
 }
@@ -457,9 +498,10 @@ function beginQuiz({ mode, questions, duration }) {
 
   showScreen("quiz");
   qTotal.textContent = questions.length;
+  const isFillSet = questions[0] && questions[0].type === "fill";
   quizMeta.textContent = !state.timed
     ? `Luyện tập câu sai · ${questions.length} câu`
-    : state.code === "FILL"
+    : isFillSet
       ? `Điền đục lỗ · ${state.name}`
       : `Mã đề ${state.code} · ${state.name}`;
 
@@ -865,6 +907,8 @@ restartBtn.addEventListener("click", () => {
   setStatus(startNote, "");
   renderStartBest();
   renderGamify();
+  renderSubjects();
+  populateCodes();
   showScreen("start");
 });
 
@@ -1027,6 +1071,8 @@ $$("[data-back]").forEach((b) => b.addEventListener("click", () => {
 }));
 
 /* ----------------------- Khởi động ----------------------- */
+renderSubjects();
+populateCodes();
 renderStartBest();
 renderGamify();
 initNotes();
