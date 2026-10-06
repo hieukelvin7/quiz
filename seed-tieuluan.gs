@@ -31,6 +31,25 @@ var TL_MCQ = {
     [12, "Kodály và Orff hiện được vận dụng chủ yếu ở đâu?", "Nhạc viện chuyên nghiệp", "Hệ thống giáo dục phổ thông ở nhiều quốc gia", "Phòng thu âm", "Sân khấu biểu diễn", "B"],
     [13, "Theo Chosky và cộng sự, một phương pháp GDAN đúng nghĩa KHÔNG bao gồm yếu tố nào?", "Triết lý/nguyên tắc có thể nhận diện", "Hệ thống sư phạm thống nhất", "Mục tiêu nhân văn", "Mục đích thuần túy thương mại", "D"],
   ],
+  "TL03": [
+    [1, "Chương trình Giáo dục phổ thông 2018 do cơ quan nào ban hành?", "Chính phủ", "Bộ Giáo dục và Đào tạo", "UNESCO", "Sở GD&ĐT TP.HCM", "B"],
+    [2, "Chương trình GDPT 2018 chuyển từ mô hình nào sang định hướng phát triển phẩm chất và năng lực?", "Truyền thụ kiến thức", "Thi cử", "Tự học", "Trải nghiệm", "A"],
+    [3, "Việc triển khai môn Âm nhạc theo chủ trương nào?", "Một chương trình – một sách giáo khoa", "Một chương trình – nhiều sách giáo khoa", "Nhiều chương trình – một sách", "Không dùng sách", "B"],
+    [4, "Ba bộ sách giáo khoa Âm nhạc 1–5 được phê duyệt là?", "Kết nối tri thức, Chân trời sáng tạo, Cánh Diều", "Cánh Diều, Bình Minh, Hừng Đông", "Kết nối tri thức, Tương lai, Cánh Diều", "Chân trời, Hoa Sen, Cánh Diều", "A"],
+    [5, "Phân môn nào giữ vị trí trung tâm trong chương trình âm nhạc tiểu học?", "Nghe nhạc", "Hát", "Thường thức âm nhạc", "Vận động theo nhạc", "B"],
+    [6, "Năm phân môn của môn Âm nhạc tiểu học gồm?", "Hát, Nghe nhạc, Thực hành nhạc cụ, Thường thức âm nhạc, Vận động theo nhạc", "Hát, Múa, Vẽ, Đọc, Viết", "Hát, Nghe, Chép, Thi, Diễn", "Hát, Nhảy, Sáng tác, Hòa âm, Phối khí", "A"],
+    [7, "Các nhạc cụ được đưa vào giảng dạy ở tiểu học gồm?", "Piano, violon, guitar, trống jazz", "Recorder, thanh phách, song loan, trống nhỏ", "Organ, kèn, sáo, đàn tranh", "Guitar, ukulele, harmonica", "B"],
+    [8, "Theo quy định, môn Âm nhạc ở tiểu học được bố trí mấy tiết mỗi tuần?", "1 tiết/tuần", "2 tiết/tuần", "3 tiết/tuần", "4 tiết/tuần", "A"],
+    [9, "Học sinh lớp 1 thường khó duy trì sự chú ý quá bao lâu?", "5 phút", "10–15 phút", "30 phút", "45 phút", "B"],
+    [10, "Âm vực giọng trẻ em 6–8 tuổi trung bình khoảng?", "Đô1 đến đô2", "Rê1 đến si1", "Son1 đến son2", "La1 đến la2", "B"],
+    [11, "Các bài dân ca 'Lý cây xanh', 'Bắc kim thang' giúp học sinh làm quen với?", "Thang âm ngũ cung", "Điệu thức trưởng châu Âu", "Hệ thống 12 âm", "Nhịp 6/8", "A"],
+    [12, "Tác phẩm 'Ode to Joy' (Khúc hoan ca) khi đưa vào SGK thường được chuyển về giọng nào?", "La thứ", "Đô trưởng hoặc Rê trưởng", "Pha thăng thứ", "Si giáng trưởng", "B"],
+    [13, "Bài 'Auld Lang Syne' là dân ca của nước nào?", "Pháp", "Scotland", "Nga", "Ý", "B"],
+    [14, "Bài nhận định (Đề 3) tập trung vào cấp học và địa bàn nào?", "Trung học, Hà Nội", "Tiểu học, TP. Hồ Chí Minh", "Mầm non, Đà Nẵng", "THPT, Cần Thơ", "B"],
+    [15, "Theo bài, yếu tố nào giữ vai trò trung tâm quyết định hiệu quả triển khai chương trình?", "Sách giáo khoa", "Năng lực thực thi của đội ngũ giáo viên", "Cơ sở vật chất", "Sĩ số lớp", "B"],
+    [16, "Nguy cơ được cảnh báo nếu chỉ thay đổi mục tiêu trên văn bản mà không điều chỉnh điều kiện là?", "Thiếu giáo viên", "'Đổi mới hình thức nhưng chưa đổi mới bản chất'", "Quá tải chương trình", "Lạm dụng công nghệ", "B"],
+    [17, "Một giải pháp về nội dung SGK được đề xuất là?", "Bỏ dân ca", "Tăng tỷ lệ dân ca và điều chỉnh cao độ một số bài lớp 1–2 cho phù hợp âm vực trẻ", "Tăng bài hát nước ngoài", "Bỏ phân môn nhạc cụ", "B"],
+  ],
   "TL04": [
     [1, "Phương pháp giáo dục âm nhạc ở VN được chia thành hai nhóm chủ đạo nào?", "Truyền thống và hiện đại", "Lý thuyết và thực hành", "Cá nhân và tập thể", "Trong nước và quốc tế", "A"],
     [2, "Phương pháp nào thuộc nhóm TRUYỀN THỐNG?", "Ứng dụng công nghệ thông tin", "Truyền khẩu – bắt chước", "Làm việc nhóm", "Học sinh thuyết trình", "B"],
@@ -109,6 +128,9 @@ var TL_FILL = [
     ["Phương pháp Suzuki", "Phương pháp Suzuki gắn với nước ___, cho rằng trẻ học âm nhạc tự nhiên như học ___; phương pháp này phổ biến chủ yếu trong đào tạo ___ cá nhân và bán chuyên.", "Nhật Bản|tiếng mẹ đẻ|nhạc cụ", "Nhật|tiếng mẹ|"],
     ["Phương pháp VN – truyền thống", "Nhóm phương pháp truyền thống ở Việt Nam gồm: truyền khẩu – ___, ___ (dùng lời nói truyền đạt kiến thức), đọc – chép và ___ âm nhạc. Phương pháp truyền khẩu – bắt chước phù hợp nhất với học sinh ___ và tiểu học.", "bắt chước|thuyết giảng|chính tả|mầm non", "|||"],
     ["Phương pháp VN – hiện đại", "Nhóm phương pháp hiện đại gồm ứng dụng ___, làm việc ___, học sinh ___, và tiếp thu các phương pháp quốc tế như Kodály, Orff. Xu hướng tất yếu là ___ hài hòa giữa truyền thống và hiện đại.", "công nghệ thông tin|nhóm|thuyết trình|tích hợp", "CNTT|||"],
+    ["Chương trình GDPT 2018 (Đề 3)", "Chương trình Giáo dục phổ thông ___ do ___ ban hành, chuyển từ truyền thụ kiến thức sang phát triển ___ và ___ người học. Môn Âm nhạc được triển khai theo chủ trương 'một chương trình – nhiều ___'.", "2018|Bộ Giáo dục và Đào tạo|phẩm chất|năng lực|sách giáo khoa", "|Bộ GD&ĐT|||"],
+    ["Ba bộ sách & phân môn (Đề 3)", "Ba bộ sách giáo khoa Âm nhạc 1–5 được phê duyệt gồm: ___, Chân trời sáng tạo và ___. Môn Âm nhạc tiểu học gồm năm phân môn: Hát, Nghe nhạc, Thực hành ___, Thường thức âm nhạc và ___ theo nhạc; trong đó phân môn ___ giữ vị trí trung tâm.", "Kết nối tri thức với cuộc sống|Cánh Diều|nhạc cụ|vận động|Hát", "Kết nối tri thức||||"],
+    ["Nhạc cụ & thời lượng (Đề 3)", "Các nhạc cụ được đưa vào dạy ở tiểu học gồm recorder, thanh phách, ___ và trống nhỏ. Dân ca 'Lý cây xanh', 'Bắc kim thang' giúp học sinh làm quen với thang âm ___. Môn Âm nhạc được bố trí ___ tiết/tuần.", "song loan|ngũ cung|1", "||một"],
     ["Chính tả âm nhạc", "Phương pháp chính tả âm nhạc là hoạt động giáo viên đọc tên ___ kết hợp ___, học sinh nghe và chuyển thành ___ trên khuông nhạc. Phương pháp này khác với ký âm (nghe – ghi) vốn dựa trên cảm nhận ___ thực tế.", "nốt|trường độ|ký hiệu|cao độ", "tên nốt|||"],
     ["Di sản UNESCO Việt Nam", "Các di sản âm nhạc phi vật thể Việt Nam được UNESCO công nhận gồm Ca trù, ___ cung đình Huế, Đờn ca tài tử, Không gian văn hóa ___ Tây Nguyên và Dân ca Quan họ ___.", "Nhã nhạc|cồng chiêng|Bắc Ninh", "||"],
     ["Quan họ Bắc Ninh", "Dân ca Quan họ Bắc Ninh được UNESCO công nhận năm ___, thuộc vùng văn hóa ___, được lưu truyền chủ yếu bằng phương thức ___, gắn với lễ hội ___. Nghệ nhân ___ được xem như 'báu vật nhân văn sống' của Quan họ.", "2009|Kinh Bắc|truyền khẩu|Lim|Nguyễn Thị Cầu", "|||hội Lim|"],
@@ -122,8 +144,6 @@ var TL_FILL = [
 ];
 function seedTieuLuan() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  // Dọn sheet TL03 cũ nếu còn (PDF không có Đề 3)
-  var junk = ss.getSheetByName("TL03"); if (junk) ss.deleteSheet(junk);
   var mh = ["ID","Question","OptionA","OptionB","OptionC","OptionD","Answer"];
   Object.keys(TL_MCQ).forEach(function (code) {
     var old = ss.getSheetByName(code); if (old) ss.deleteSheet(old);
