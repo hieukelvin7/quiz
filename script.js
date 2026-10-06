@@ -294,7 +294,11 @@ const SUBJECTS = [
   },
   {
     id: "tieuluan", name: "Viết tiểu luận", icon: "✍️", fillSheet: "FILL_TL",
-    codes: [["TL01", "Ôn tập kiến thức tiểu luận"]],
+    codes: [
+      ["TL01", "Vai trò âm nhạc & Chân–Thiện–Mỹ"], ["TL02", "Phương pháp GDAN thế giới"],
+      ["TL03", "Phương pháp GDAN ở Việt Nam"], ["TL04", "Di sản UNESCO & Quan họ"],
+      ["TL05", "Giáo dục đạo đức qua âm nhạc"], ["TL06", "KHCN & AI trong giáo dục âm nhạc"],
+    ],
   },
 ];
 let curSubject = SUBJECTS[0];
