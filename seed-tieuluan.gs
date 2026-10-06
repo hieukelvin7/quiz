@@ -31,7 +31,7 @@ var TL_MCQ = {
     [12, "Kodály và Orff hiện được vận dụng chủ yếu ở đâu?", "Nhạc viện chuyên nghiệp", "Hệ thống giáo dục phổ thông ở nhiều quốc gia", "Phòng thu âm", "Sân khấu biểu diễn", "B"],
     [13, "Theo Chosky và cộng sự, một phương pháp GDAN đúng nghĩa KHÔNG bao gồm yếu tố nào?", "Triết lý/nguyên tắc có thể nhận diện", "Hệ thống sư phạm thống nhất", "Mục tiêu nhân văn", "Mục đích thuần túy thương mại", "D"],
   ],
-  "TL03": [
+  "TL04": [
     [1, "Phương pháp giáo dục âm nhạc ở VN được chia thành hai nhóm chủ đạo nào?", "Truyền thống và hiện đại", "Lý thuyết và thực hành", "Cá nhân và tập thể", "Trong nước và quốc tế", "A"],
     [2, "Phương pháp nào thuộc nhóm TRUYỀN THỐNG?", "Ứng dụng công nghệ thông tin", "Truyền khẩu – bắt chước", "Làm việc nhóm", "Học sinh thuyết trình", "B"],
     [3, "Phương pháp truyền khẩu – bắt chước phù hợp nhất với đối tượng nào?", "THPT", "Học sinh mầm non và tiểu học", "Sinh viên nhạc viện", "Giáo viên", "B"],
@@ -47,7 +47,7 @@ var TL_MCQ = {
     [13, "Xu hướng tất yếu của giáo dục âm nhạc VN hiện nay là?", "Loại bỏ phương pháp truyền thống", "Tích hợp hài hòa phương pháp truyền thống và hiện đại", "Chỉ dùng công nghệ", "Quay lại lối dạy cũ", "B"],
     [14, "Theo bài, yếu tố nào được xem là nền tảng cốt lõi để chuẩn hóa phương pháp dạy học âm nhạc?", "Kinh nghiệm truyền miệng", "Nghiên cứu khoa học", "Thi đua khen thưởng", "Cơ sở vật chất", "B"],
   ],
-  "TL04": [
+  "TL05": [
     [1, "Di sản nào sau đây KHÔNG thuộc danh sách di sản âm nhạc phi vật thể VN được UNESCO công nhận (nêu trong bài)?", "Ca trù", "Nhã nhạc cung đình Huế", "Hát xẩm", "Đờn ca tài tử", "C"],
     [2, "Dân ca Quan họ Bắc Ninh được UNESCO công nhận vào năm nào?", "2003", "2009", "2013", "2001", "B"],
     [3, "Dân ca Quan họ thuộc vùng văn hóa nào?", "Kinh Bắc", "Tây Nguyên", "Nam Bộ", "Xứ Huế", "A"],
@@ -59,7 +59,7 @@ var TL_MCQ = {
     [9, "'Không gian văn hóa cồng chiêng' gắn với vùng nào của Việt Nam?", "Tây Bắc", "Tây Nguyên", "Đồng bằng sông Hồng", "Nam Trung Bộ", "B"],
     [10, "Yếu tố cốt lõi tạo nên sức sống bền vững cho di sản Quan họ là?", "Sự tài trợ của nhà nước", "Sự gắn bó mật thiết và vai trò chủ thể của cộng đồng", "Truyền thông hiện đại", "Biểu diễn sân khấu", "B"],
   ],
-  "TL05": [
+  "TL06": [
     [1, "Câu 'Có tài mà không có đức là người vô dụng' là của ai?", "Khổng Tử", "Hồ Chí Minh", "Plato", "Beethoven", "B"],
     [2, "Nhà triết học Hy Lạp nào cho rằng âm nhạc tác động trực tiếp đến tâm hồn, nuôi dưỡng kỷ luật và lòng dũng cảm?", "Aristotle", "Plato", "Socrates", "Pythagoras", "B"],
     [3, "Câu 'Hưng ư thi, lập ư lễ, thành ư nhạc' là quan điểm của ai?", "Lão Tử", "Khổng Tử", "Hồ Chí Minh", "Mạnh Tử", "B"],
@@ -78,19 +78,26 @@ var TL_MCQ = {
     [16, "Để phát huy hiệu quả, giáo dục đạo đức qua âm nhạc cần sự phối hợp của?", "Chỉ nhà trường", "Nhà trường, gia đình và xã hội", "Chỉ gia đình", "Chỉ cơ quan truyền thông", "B"],
     [17, "Với bậc tiểu học, nội dung giáo dục đạo đức qua âm nhạc nên tập trung vào?", "Trách nhiệm xã hội, lý tưởng sống", "Tình cảm gia đình, bạn bè, thiên nhiên, điều gần gũi", "Chính trị", "Kinh tế thị trường", "B"],
   ],
-  "TL06": [
+  "TL07": [
     [1, "Quyết định số 131/QĐ-TTg (25/01/2022) của Thủ tướng phê duyệt Đề án về nội dung gì?", "Phổ cập giáo dục mầm non", "Tăng cường ứng dụng CNTT và chuyển đổi số trong giáo dục giai đoạn 2022–2025", "Miễn học phí", "Xây dựng trường chuẩn", "B"],
     [2, "Đề án chuyển đổi số trong giáo dục (QĐ 131) định hướng đến năm nào?", "2025", "2030", "2035", "2045", "B"],
     [3, "Báo cáo Giám sát Giáo dục Toàn cầu 2023 của UNESCO nhấn mạnh công nghệ trong giáo dục cần?", "Thay thế hoàn toàn giáo viên", "Hỗ trợ tương tác con người, không thay thế tương tác giáo viên – học sinh", "Dạy học tự động", "Loại bỏ sách giấy", "B"],
-    [4, "Phần mềm nào sau đây là phần mềm CHÉP NHẠC được nêu trong bài?", "Photoshop", "Sibelius, Dorico, MuseScore", "Excel", "Zoom", "B"],
-    [5, "Logic Pro và Ableton Live là nhóm phần mềm gì?", "Chép nhạc", "Sản xuất âm nhạc", "Diệt virus", "Thiết kế đồ họa", "B"],
-    [6, "Nền tảng truyền phát trực tuyến âm nhạc được nêu trong bài gồm?", "YouTube, Spotify, Apple Music", "Facebook, Zalo, Telegram", "Google Drive, Dropbox", "Netflix, HBO", "A"],
-    [7, "Công cụ AI nào được nêu có khả năng tạo nhạc, xây dựng bản demo, hỗ trợ sáng tác?", "Suno, Udio", "Word, Excel", "Sibelius, Dorico", "YouTube, Spotify", "A"],
-    [8, "Các trợ lý AI như ChatGPT, Gemini, Copilot có thể hỗ trợ giáo viên làm gì?", "Biểu diễn thay học sinh", "Xây dựng kế hoạch bài dạy, thiết kế câu hỏi và học liệu", "Chấm điểm thi tốt nghiệp", "Tuyển sinh", "B"],
-    [9, "Các nền tảng EarMaster, Auralia, SmartMusic hỗ trợ điều gì?", "Luyện tập, đánh giá biểu diễn, phân tích cao độ – tiết tấu", "Chỉnh sửa ảnh", "Quản lý tài chính", "Họp trực tuyến", "A"],
-    [10, "Quan điểm chung của bài về vai trò của AI trong giáo dục âm nhạc là?", "AI thay thế hoàn toàn giáo viên", "AI chỉ nên là công cụ hỗ trợ, không thay thế vai trò giáo viên", "Không nên dùng AI", "AI chỉ dùng để giải trí", "B"],
-    [11, "Theo bài, sự hiện diện của công nghệ trong giáo dục có đồng nghĩa với chất lượng cao hơn không?", "Có, luôn luôn", "Không, công nghệ phải được dùng phù hợp và đúng cách", "Chỉ ở thành phố", "Chỉ với học sinh giỏi", "B"],
-    [12, "AI trong giáo dục âm nhạc có thể cung cấp phản hồi theo?", "Thời gian thực (gần như tức thời)", "Mỗi học kỳ một lần", "Sau một năm", "Không có phản hồi", "A"],
+    [4, "Theo UNESCO (2023), công nghệ trong giáo dục cần bảo đảm các tiêu chí nào?", "Rẻ, nhanh, tiện", "Phù hợp, khả năng tiếp cận, công bằng và bền vững", "Hiện đại và đắt tiền", "Tự động hoàn toàn", "B"],
+    [5, "Phần mềm nào sau đây là phần mềm CHÉP NHẠC được nêu trong bài?", "Photoshop", "Sibelius, Dorico, MuseScore", "Excel", "Zoom", "B"],
+    [6, "Logic Pro và Ableton Live là nhóm phần mềm gì?", "Chép nhạc", "Sản xuất âm nhạc", "Diệt virus", "Thiết kế đồ họa", "B"],
+    [7, "Nền tảng truyền phát trực tuyến âm nhạc được nêu trong bài gồm?", "YouTube, Spotify, Apple Music", "Facebook, Zalo, Telegram", "Google Drive, Dropbox", "Netflix, HBO", "A"],
+    [8, "Theo bài, sự hiện diện của công nghệ trong giáo dục có đồng nghĩa với chất lượng cao hơn không?", "Có, luôn luôn", "Không, công nghệ phải được dùng phù hợp và đúng cách", "Chỉ ở thành phố", "Chỉ với học sinh giỏi", "B"],
+    [9, "Công nghệ số đã làm thay đổi phương thức nào của âm nhạc?", "Chỉ biểu diễn", "Sáng tác, sản xuất, biểu diễn, lưu trữ và tiếp nhận", "Chỉ lưu trữ", "Không thay đổi gì", "B"],
+  ],
+  "TL08": [
+    [1, "Công cụ AI nào được nêu có khả năng tạo nhạc, xây dựng bản demo, hỗ trợ sáng tác?", "Suno, Udio", "Word, Excel", "Sibelius, Dorico", "YouTube, Spotify", "A"],
+    [2, "Các trợ lý AI như ChatGPT, Gemini, Copilot có thể hỗ trợ giáo viên làm gì?", "Biểu diễn thay học sinh", "Xây dựng kế hoạch bài dạy, thiết kế câu hỏi và học liệu", "Chấm thi tốt nghiệp", "Tuyển sinh", "B"],
+    [3, "Các nền tảng EarMaster, Auralia, SmartMusic hỗ trợ điều gì?", "Luyện tập, đánh giá biểu diễn, phân tích cao độ – tiết tấu", "Chỉnh sửa ảnh", "Quản lý tài chính", "Họp trực tuyến", "A"],
+    [4, "Quan điểm chung của bài về vai trò của AI trong giáo dục âm nhạc là?", "AI thay thế hoàn toàn giáo viên", "AI chỉ nên là công cụ hỗ trợ, không thay thế vai trò giáo viên", "Không nên dùng AI", "AI chỉ dùng để giải trí", "B"],
+    [5, "AI trong giáo dục âm nhạc có thể cung cấp phản hồi theo?", "Thời gian thực (gần như tức thời)", "Mỗi học kỳ một lần", "Sau một năm", "Không có phản hồi", "A"],
+    [6, "Trí tuệ nhân tạo (AI) hiện được ứng dụng rộng rãi trong các lĩnh vực nào?", "Chỉ âm nhạc", "Y tế, kinh tế, truyền thông và giáo dục", "Chỉ quân sự", "Chỉ giải trí", "B"],
+    [7, "Trong thực hành âm nhạc, AI có thể hỗ trợ học sinh điều gì?", "Phát triển ý tưởng, thử nghiệm và nhận phản hồi", "Thi hộ", "Chấm điểm đạo đức", "Thay thế nhạc cụ", "A"],
+    [8, "Hạn chế cần lưu ý khi dùng AI tạo nhạc (Suno, Udio) trong giáo dục là gì?", "Không có hạn chế", "Dễ lệ thuộc, cần dùng như công cụ hỗ trợ chứ không thay thế sáng tạo của người học", "Quá đắt", "Không tạo được nhạc", "B"],
   ],
 };
 var TL_FILL = [
@@ -115,6 +122,8 @@ var TL_FILL = [
 ];
 function seedTieuLuan() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
+  // Dọn sheet TL03 cũ nếu còn (PDF không có Đề 3)
+  var junk = ss.getSheetByName("TL03"); if (junk) ss.deleteSheet(junk);
   var mh = ["ID","Question","OptionA","OptionB","OptionC","OptionD","Answer"];
   Object.keys(TL_MCQ).forEach(function (code) {
     var old = ss.getSheetByName(code); if (old) ss.deleteSheet(old);
